@@ -1342,41 +1342,51 @@ const DailyOptionsView = ({ onSync, onCampfire, onDungeon, onClose }: { onSync: 
     </div>
 );
 
-const CampfireView = ({ onComplete }: { onComplete: () => void }) => {
-    const [progress, setProgress] = useState(0);
+const PROMPTS = [
+    "What is one physical habit you want to improve today?",
+    "How many hours of sleep did you get last night, and what is your goal for tonight?",
+    "What is one thing you accomplished yesterday that you're proud of?",
+    "Describe how your body feels right now in three words.",
+    "What is your main focus for today's rest and recovery?"
+];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    return 100;
-                }
-                return prev + 2; 
-            });
-        }, 100);
-        return () => clearInterval(interval);
-    }, []);
+const CampfireView = ({ onComplete }: { onComplete: () => void }) => {
+    const [entry, setEntry] = useState('');
+    const [prompt] = useState(() => PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
 
     return (
-        <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-            <div className="relative w-32 h-32 mb-8">
-                <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-xl animate-pulse"></div>
-                <span className="material-symbols-outlined text-8xl text-orange-500 relative z-10">fireplace</span>
-            </div>
+        <div className="h-full flex flex-col p-4 text-center overflow-y-auto no-scrollbar relative bg-[#050505]">
+            <h2 className="font-display font-bold text-2xl text-white mb-1 uppercase tracking-widest text-orange-500">Campfire Rest</h2>
+            <p className="font-mono text-[10px] text-gray-500 mb-4 uppercase">Mindful Recovery Protocol</p>
             
-            <h2 className="font-display font-bold text-2xl text-white mb-2">CAMPFIRE MODE</h2>
-            <p className="font-mono text-xs text-gray-400 mb-8 max-w-[200px]">
-                Resting replenishes HP and Mana. Streak maintained.
-            </p>
-
-            <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mb-8">
-                <div className="h-full bg-orange-500 transition-all duration-100" style={{ width: `${progress}%` }}></div>
+            {/* Embedded 3-min Meditation Video */}
+            <div className="w-full aspect-video bg-black border border-white/10 mb-6 rounded overflow-hidden shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/inpok4MKVLM" 
+                    title="3 Minute Guided Meditation" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen>
+                </iframe>
             </div>
 
-            {progress >= 100 && (
-                <CyberButton onClick={onComplete} icon="check">FINISH REST</CyberButton>
-            )}
+            {/* Journal Section */}
+            <div className="w-full flex-1 flex flex-col text-left mb-6">
+                <h3 className="font-mono text-xs text-orange-400 mb-2 uppercase tracking-widest"><span className="material-symbols-outlined text-[12px] mr-1 align-text-bottom">edit_document</span> Daily Reflection</h3>
+                <p className="font-bold text-sm text-white mb-3 bg-white/5 p-3 border-l-2 border-orange-500">{prompt}</p>
+                <textarea 
+                    className="w-full flex-1 min-h-[100px] bg-black border border-white/20 text-white p-3 font-mono text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none mb-4"
+                    placeholder="Type your reflection here to verify your rest..."
+                    value={entry}
+                    onChange={(e) => setEntry(e.target.value)}
+                />
+                
+                <CyberButton onClick={() => { playUiSound('CONFIRM'); onComplete(); }} disabled={entry.trim().length < 10} icon="check">
+                    {entry.trim().length < 10 ? "ENTRY TOO SHORT" : "VERIFY & REST"}
+                </CyberButton>
+            </div>
         </div>
     );
 };
@@ -1450,19 +1460,39 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                 
                 {/* Spinning Container */}
                 <motion.div 
-                    className="w-full h-full rounded-full border-2 border-gray-800 relative bg-black shadow-[inset_0_0_50px_rgba(0,0,0,1)]"
+                    className="w-full h-full rounded-full border-4 border-gray-800 relative bg-black shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden"
                     animate={spinning ? { rotate: 360 * 5 + Math.floor(Math.random() * 360) } : { rotate: 0 }}
                     transition={spinning ? { duration: 3, ease: "circOut" } : { duration: 0 }}
+                    style={{
+                        background: `conic-gradient(
+                            from 0deg,
+                            ${WHEEL_LOOT_TABLE.map((item, i) => {
+                                const color = getRarityColor(item.tier);
+                                const start = (i * 100) / WHEEL_LOOT_TABLE.length;
+                                const end = ((i + 1) * 100) / WHEEL_LOOT_TABLE.length;
+                                return `${color}33 ${start}%, ${color}33 ${end}%`;
+                            }).join(', ')}
+                        )`
+                    }}
                 >
-                    {/* Ring decoration */}
-                    <div className="absolute inset-2 rounded-full border border-gray-800/50"></div>
-                    <div className="absolute inset-8 rounded-full border border-gray-900"></div>
+                    {/* Inner divider lines for pie slices */}
+                    {WHEEL_LOOT_TABLE.map((_, i) => {
+                        const angle = (i * 360) / WHEEL_LOOT_TABLE.length;
+                        return (
+                            <div 
+                                key={`line-${i}`}
+                                className="absolute top-0 left-1/2 w-0.5 h-1/2 bg-gray-800/50 origin-bottom"
+                                style={{ transform: `translateX(-50%) rotate(${angle}deg)` }}
+                            ></div>
+                        );
+                    })}
 
                     {/* Loot Items positioned in a circle */}
                     {WHEEL_LOOT_TABLE.map((item, i) => {
-                        const angle = (i * 360) / WHEEL_LOOT_TABLE.length;
+                        const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
+                        const angle = (i * sliceAngle) + (sliceAngle / 2); // Center of the slice
                         const rad = angle * (Math.PI / 180);
-                        const radius = 100; // Distance from center
+                        const radius = 85; // Distance from center
                         const x = radius * Math.sin(rad);
                         const y = -radius * Math.cos(rad);
                         const color = getRarityColor(item.tier);
@@ -1470,15 +1500,14 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                         return (
                             <div 
                                 key={i} 
-                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-sm bg-black border"
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center"
                                 style={{ 
                                     transform: `translate(${x}px, ${y}px) rotate(${angle}deg)`,
-                                    borderColor: color,
                                     color: color,
-                                    boxShadow: `0 0 10px ${color}33`
+                                    textShadow: `0 0 10px ${color}88`
                                 }}
                             >
-                                <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                                <span className="material-symbols-outlined text-2xl mb-1">{item.icon}</span>
                             </div>
                         );
                     })}
