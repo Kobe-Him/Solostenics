@@ -7,20 +7,6 @@ import { GameService } from './services/GameService';
 
 // Screens
 import BootSequence from './screens/BootSequence';
-import TheGate from './screens/TheGate';
-import Intro from './screens/Intro';
-import CombatHistory from './screens/CombatHistory';
-import BioData from './screens/BioData';
-import Processing from './screens/Processing';
-import RealityCheck from './screens/RealityCheck';
-import SystemOnboarding from './screens/SystemOnboarding';
-import FoundersNote from './screens/FoundersNote';
-import ShadowBind from './screens/ShadowBind';
-import TheContract from './screens/TheContract';
-import Pledge from './screens/Pledge';
-import Paywall from './screens/Paywall';
-import PaymentGateway from './screens/PaymentGateway';
-import FinalGate from './screens/FinalGate';
 import GameLobby from './screens/GameLobby';
 import DungeonRun, { Encounter } from './screens/DungeonRun';
 
@@ -106,13 +92,11 @@ const App: React.FC = () => {
   };
 
   const handleBootComplete = () => {
-      // Logic: If user has a Shadow Name, they have finished onboarding.
-      // Skip straight to Lobby.
-      if (playerProfile.shadowName && playerProfile.shadowName !== '') {
-          setCurrentStep(Step.GAME_LOBBY);
-      } else {
-          nextStep(Step.THE_GATE);
+      // Logic: Skip all onboarding and go straight to the Game Lobby
+      if (!playerProfile.shadowName || playerProfile.shadowName === '') {
+         setPlayerProfile(prev => ({ ...prev, shadowName: 'Hunter' }));
       }
+      setCurrentStep(Step.GAME_LOBBY);
   };
 
   // Determine if back button should be shown
@@ -134,27 +118,9 @@ const App: React.FC = () => {
   const renderScreen = () => {
     switch (currentStep) {
       case Step.BOOT: return <BootSequence onComplete={handleBootComplete} onSkip={() => setCurrentStep(Step.GAME_LOBBY)} />;
-      case Step.THE_GATE: return <TheGate onNext={() => nextStep(Step.INTRO)} />;
-      case Step.INTRO: return <Intro onNext={(data) => { updateData(data); nextStep(Step.COMBAT_HISTORY); }} />;
-      case Step.COMBAT_HISTORY: return <CombatHistory onNext={(data) => { updateData(data); nextStep(Step.BIO_DATA); }} />;
-      case Step.BIO_DATA: return <BioData onNext={(data) => { updateData(data); nextStep(Step.PROCESSING); }} />;
-      case Step.PROCESSING: return <Processing onComplete={() => nextStep(Step.REALITY_CHECK)} />;
-      case Step.REALITY_CHECK: return <RealityCheck onNext={() => nextStep(Step.SYSTEM_ONBOARDING)} />;
-      case Step.SYSTEM_ONBOARDING: return <SystemOnboarding onNext={() => nextStep(Step.FOUNDERS_NOTE)} />;
-      case Step.FOUNDERS_NOTE: return <FoundersNote onNext={() => nextStep(Step.SHADOW_BIND)} />;
       
-      // Shadow Bind with Hatch Logic
-      case Step.SHADOW_BIND: return <ShadowBind onNext={(data) => { updateData(data); nextStep(Step.THE_CONTRACT); }} onHatch={() => { setSelectedExercise('SQUATS'); setCurrentStep(Step.EGG_BATTLE); }} />;
+      // Shadow Bind with Hatch Logic - Kept for Egg Battle support if needed
       case Step.EGG_BATTLE: return <DungeonRun profile={playerProfile} onComplete={handleEggHatchComplete} encounterOverride={EGG_ENCOUNTER} exercise={selectedExercise} />;
-
-      case Step.THE_CONTRACT: return <TheContract onNext={() => nextStep(Step.PLEDGE)} />;
-      case Step.PLEDGE: return <Pledge onNext={() => nextStep(Step.PAYWALL)} />;
-      case Step.PAYWALL: return <Paywall onNext={(plan) => {
-        if (plan === 'HUNTER') nextStep(Step.PAYMENT_GATEWAY);
-        else nextStep(Step.FINAL_GATE);
-      }} />;
-      case Step.PAYMENT_GATEWAY: return <PaymentGateway onNext={() => nextStep(Step.FINAL_GATE)} />;
-      case Step.FINAL_GATE: return <FinalGate onNext={handleCreateAccount} />;
       
       // Main Game Loop using Real Data
       case Step.GAME_LOBBY: return <GameLobby profile={playerProfile} onNavigate={nextStep} onUpdateProfile={setPlayerProfile} onSelectExercise={setSelectedExercise} />;

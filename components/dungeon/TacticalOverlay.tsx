@@ -395,11 +395,11 @@ const TacticalOverlay: React.FC<TacticalOverlayProps> = ({
                            {/* Option B: PROVOKE (Red) */}
                            <TacticalCard 
                                 type="RED"
-                                title="BLOODLUST PROTOCOL"
+                                title="NEURAL OVERRIDE"
                                 icon="favorite"
                                 cost={0}
                                 effect="+10 MANA • 2X REWARDS"
-                                desc="Instant Mana recharge. High Risk: Bad reps drain HP."
+                                desc="Instant Mana recharge. High Risk: Bad form drains HP."
                                 onClick={() => handleAction('PROVOKE')}
                                 index={1}
                            />

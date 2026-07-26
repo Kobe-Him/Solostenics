@@ -20,7 +20,7 @@ export interface Encounter {
   totalSets: number;
   repsPerSet: number;
   damage: number;
-  image: string;
+  image: string | null;
   shadowColor: string;
 }
 
@@ -42,7 +42,7 @@ const DUNGEON_MAP: Encounter[] = [
       totalSets: 1, 
       repsPerSet: 10, 
       damage: 10, 
-      image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/302.png',
+      image: null,
       shadowColor: '#a855f7' // Purple
   },
   { 
@@ -52,7 +52,7 @@ const DUNGEON_MAP: Encounter[] = [
       totalSets: 2, 
       repsPerSet: 10, 
       damage: 15, 
-      image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/67.png',
+      image: null,
       shadowColor: '#22c55e' // Green
   },
   { 
@@ -62,7 +62,7 @@ const DUNGEON_MAP: Encounter[] = [
       totalSets: 3, 
       repsPerSet: 10, 
       damage: 25, 
-      image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/306.png',
+      image: null,
       shadowColor: '#ef4444' // Red
   },
 ];
@@ -291,13 +291,21 @@ const MonsterVisual = ({
                 />
 
                 {/* Monster Image */}
-                <motion.img 
-                   key={activeEncounter.id}
-                   src={activeEncounter.image}
-                   alt="Monster"
-                   className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative z-10"
-                   style={{ filter: 'contrast(1.1) saturate(1.1)' }}
-                />
+                {/* Monster Image or Placeholder */}
+                {activeEncounter.image ? (
+                    <motion.img 
+                       key={activeEncounter.id}
+                       src={activeEncounter.image}
+                       alt="Monster"
+                       className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative z-10"
+                       style={{ filter: 'contrast(1.1) saturate(1.1)' }}
+                    />
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center border-4 border-dashed border-gray-700 bg-black/50 relative z-10 rounded-xl">
+                        <span className="material-symbols-outlined text-6xl text-gray-500 mb-4 animate-pulse">image_not_supported</span>
+                        <p className="font-display font-bold text-gray-500 tracking-[0.2em] uppercase text-center px-4">IMAGES COMING SOON</p>
+                    </div>
+                )}
              </>
           )}
       </motion.div>
@@ -580,7 +588,7 @@ const DungeonRun: React.FC<DungeonRunProps> = ({ onComplete, profile, encounterO
       const knee = isLeft ? lm[25] : lm[26];
 
       // Must see knees to prevent desk-sitting
-      if ((isLeft ? leftConf : rightConf) < 0.3) return "VISIBILITY_LOW";
+      if ((isLeft ? leftConf : rightConf) < 0.3) return "VISIBILITY LOW";
 
       // 2. Orientation Check (Anti-Sit)
       const dx = Math.abs(shoulder.x - hip.x);
@@ -588,18 +596,18 @@ const DungeonRun: React.FC<DungeonRunProps> = ({ onComplete, profile, encounterO
       
       if (isSquat) {
           // Squats must be vertical
-          if (dx > dy * 1.1) return "STAND_UP";
+          if (dx > dy * 1.1) return "STAND UP";
       } else {
           // Pushups must be horizontal
-          if (dy > dx * 1.1) return "GET_HORIZONTAL";
+          if (dy > dx * 1.1) return "GET HORIZONTAL";
       }
 
       // 3. Hip Angle Check
       const hipAngle = calculateAngle(shoulder, hip, knee);
       if (isSquat) {
-          if (hipAngle < 60) return "STRAIGHTEN_BACK";
+          if (hipAngle < 60) return "STRAIGHTEN BACK";
       } else {
-          if (hipAngle < 135) return "STRAIGHTEN_HIPS";
+          if (hipAngle < 135) return "STRAIGHTEN HIPS";
       }
 
       return null;
@@ -1241,7 +1249,7 @@ const DungeonRun: React.FC<DungeonRunProps> = ({ onComplete, profile, encounterO
                           <div className="bg-black border-2 border-critical p-4 shadow-[0_0_50px_red]">
                               <span className="material-symbols-outlined text-5xl text-critical animate-pulse mb-2">warning</span>
                               <h2 className="text-2xl font-display font-black text-white uppercase tracking-wider">{postureWarning}</h2>
-                              <p className="text-xs font-mono text-critical mt-1 uppercase">ANTI-CHEAT LOCKDOWN ACTIVE</p>
+                              <p className="text-xs font-mono text-critical mt-1 uppercase">FORM DEGRADATION DETECTED</p>
                           </div>
                       </motion.div>
                   )}

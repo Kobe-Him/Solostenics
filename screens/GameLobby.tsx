@@ -6,7 +6,7 @@ import { GameService, WHEEL_LOOT_TABLE, WheelReward } from '../services/GameServ
 import CyberButton from '../components/ui/CyberButton';
 import { Haptics } from '../services/Haptics';
 
-type ModalType = 'GEAR' | 'SHOP' | 'SKILLS' | 'TRIBUTE' | 'STATS' | 'DUNGEONS' | 'PROGRESSION' | 'GUILDS' | 'ROULETTE' | 'CAMPFIRE' | 'DAILY_OPTIONS' | 'HISTORY' | null;
+type ModalType = 'GEAR' | 'SHOP' | 'SKILLS' | 'TRIBUTE' | 'STATS' | 'DUNGEONS' | 'PROGRESSION' | 'GUILDS' | 'ROULETTE' | 'CAMPFIRE' | 'DAILY_OPTIONS' | 'HISTORY' | 'BATTLE_PASS' | null;
 
 interface GameLobbyProps {
   onNavigate?: (step: Step) => void;
@@ -211,62 +211,49 @@ const VengeanceGauge = ({ value }: { value: number }) => {
 
 const HologramBody = () => (
     <div className="w-full h-full relative flex items-center justify-center opacity-80">
-        <svg viewBox="0 0 200 400" className="w-full h-full drop-shadow-[0_0_10px_#00FFFF]">
+        <svg viewBox="0 0 400 600" className="w-full h-full drop-shadow-[0_0_15px_#00FFFF]">
             <defs>
-                <linearGradient id="holoGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <linearGradient id="cyberGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stopColor="#00FFFF" stopOpacity="0.8" />
                     <stop offset="100%" stopColor="#00FFFF" stopOpacity="0.1" />
                 </linearGradient>
             </defs>
+            {/* Hexagon Head */}
+            <polygon points="200,50 230,70 230,110 200,130 170,110 170,70" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            <circle cx="200" cy="90" r="10" fill="url(#cyberGradient)" />
+            {/* Neck */}
+            <line x1="200" y1="130" x2="200" y2="160" stroke="#00FFFF" strokeWidth="2" />
+            {/* Shoulders */}
+            <polyline points="100,180 150,160 250,160 300,180" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            {/* Torso Core */}
+            <polygon points="150,160 250,160 220,300 180,300" fill="url(#cyberGradient)" stroke="#00FFFF" strokeWidth="2" />
+            {/* Spine */}
+            <line x1="200" y1="160" x2="200" y2="300" stroke="#00FFFF" strokeWidth="1" strokeDasharray="5 5" />
+            {/* Arms Left */}
+            <polyline points="100,180 70,280 50,380" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            <circle cx="70" cy="280" r="6" fill="#00FFFF" />
+            {/* Arms Right */}
+            <polyline points="300,180 330,280 350,380" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            <circle cx="330" cy="280" r="6" fill="#00FFFF" />
+            {/* Hips */}
+            <polygon points="180,300 220,300 240,340 160,340" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            {/* Legs Left */}
+            <polyline points="160,340 140,460 120,580" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            <circle cx="140" cy="460" r="8" fill="#00FFFF" />
+            {/* Legs Right */}
+            <polyline points="240,340 260,460 280,580" fill="none" stroke="#00FFFF" strokeWidth="2" />
+            <circle cx="260" cy="460" r="8" fill="#00FFFF" />
             
-            {/* HEAD */}
-            <circle cx="100" cy="50" r="20" fill="none" stroke="#00FFFF" strokeWidth="1.5" />
-            
-            {/* NECK */}
-            <line x1="100" y1="70" x2="100" y2="80" stroke="#00FFFF" strokeWidth="1.5" />
-            
-            {/* SHOULDERS */}
-            <path d="M70 90 L130 90" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-            <line x1="100" y1="80" x2="70" y2="90" stroke="#00FFFF" strokeWidth="1" />
-            <line x1="100" y1="80" x2="130" y2="90" stroke="#00FFFF" strokeWidth="1" />
-
-            {/* TORSO */}
-            <path d="M70 90 L130 90 L115 180 L85 180 Z" stroke="#00FFFF" strokeWidth="1.5" fill="url(#holoGradient)" fillOpacity="0.1" />
-            
-            {/* SPINE / CENTER LINE */}
-            <line x1="100" y1="90" x2="100" y2="180" stroke="#00FFFF" strokeWidth="0.5" strokeDasharray="4 2" />
-
-            {/* ARMS - LEFT */}
-            <path d="M70 90 L55 160 L45 220" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-            <circle cx="55" cy="160" r="3" fill="#00FFFF" /> {/* Elbow */}
-            
-            {/* ARMS - RIGHT */}
-            <path d="M130 90 L145 160 L155 220" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-            <circle cx="145" cy="160" r="3" fill="#00FFFF" /> {/* Elbow */}
-
-            {/* HIPS */}
-            <path d="M85 180 L115 180 L100 200 Z" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-
-            {/* LEGS - LEFT */}
-            <path d="M85 180 L75 280 L70 380" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-            <circle cx="75" cy="280" r="4" fill="#00FFFF" /> {/* Knee */}
-
-            {/* LEGS - RIGHT */}
-            <path d="M115 180 L125 280 L130 380" stroke="#00FFFF" strokeWidth="1.5" fill="none" />
-            <circle cx="125" cy="280" r="4" fill="#00FFFF" /> {/* Knee */}
-
-            {/* SCANLINES ON BODY */}
-            <line x1="60" y1="120" x2="140" y2="120" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
-            <line x1="70" y1="150" x2="130" y2="150" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
-            <line x1="75" y1="250" x2="125" y2="250" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
-            <line x1="70" y1="330" x2="130" y2="330" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
+            {/* Decorative Scanning Rings */}
+            <circle cx="200" cy="230" r="150" fill="none" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" strokeDasharray="10 20" />
+            <circle cx="200" cy="230" r="250" fill="none" stroke="#00FFFF" strokeWidth="0.5" opacity="0.1" />
         </svg>
     </div>
 );
 
 type EquipmentSlot = 'weapon' | 'helmet' | 'chest' | 'shoulderL' | 'shoulderR' | 'legs' | 'shoes' | 'finger1' | 'finger2';
 
-const GearView = ({ profile, onUpdateProfile, initialTab = 'BODY' }: { profile: PlayerProfile, onUpdateProfile: (p: PlayerProfile) => void, initialTab?: 'BODY' | 'BAG' }) => {
+const GearView = ({ profile, onUpdateProfile, onClose, initialTab = 'BODY' }: { profile: PlayerProfile, onUpdateProfile: (p: PlayerProfile) => void, onClose?: () => void, initialTab?: 'BODY' | 'BAG' }) => {
    const [activeTab, setActiveTab] = useState<'BODY' | 'BAG'>(initialTab);
    const [selectedSlot, setSelectedSlot] = useState<EquipmentSlot | null>(null);
 
@@ -329,96 +316,52 @@ const GearView = ({ profile, onUpdateProfile, initialTab = 'BODY' }: { profile: 
    const slotItems = selectedSlot ? getCompatibleItems(selectedSlot) : [];
 
    // --- HELPER RENDER NODE ---
-   const renderNode = (slot: EquipmentSlot, x: string, y: string, defaultIcon: string) => {
+   const renderNode = (slot: EquipmentSlot, defaultIcon: string, label: string) => {
         const item = profile.equipped[slot];
         const isEquipped = !!item;
-        const rarityColor = isEquipped ? getRarityColor(item.rarity) : '#4b5563';
-        
-        // Smart Label Positioning
-        const xVal = parseFloat(x);
-        const isTooFarRight = xVal > 80;
-        const isRightSide = xVal > 50;
-        const effectiveSide = isTooFarRight ? false : isRightSide;
+        const rarityColor = isEquipped ? getRarityColor(item.rarity) : '#333';
         
         return (
-            <div 
-                className="absolute z-30 flex items-center justify-center group"
-                style={{ top: y, left: x, transform: 'translate(-50%, -50%)' }}
-            >
-                {/* Visual Connector Pulse for Equipped Items */}
-                {isEquipped && (
-                    <>
-                        <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: rarityColor }}></div>
-                        <motion.div 
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                            className="absolute -inset-1 border border-dashed rounded-full opacity-60"
-                            style={{ borderColor: rarityColor }}
-                        ></motion.div>
-                    </>
-                )}
-
+            <div className="flex flex-col items-center group relative">
                 <button 
                     onClick={() => { playUiSound('CLICK'); setSelectedSlot(slot); }} 
                     className={`
-                        relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300
-                        ${isEquipped ? 'bg-black/90 ring-1' : 'bg-black/40 hover:bg-black/60 border border-white/20'}
-                        ${selectedSlot === slot ? 'ring-2 ring-white scale-110' : ''}
+                        w-14 h-14 bg-black/80 flex items-center justify-center transition-all duration-300 relative
+                        ${isEquipped ? 'border-2' : 'border border-dashed border-gray-600 hover:border-white/50 hover:bg-white/10'}
+                        ${selectedSlot === slot ? 'scale-110 shadow-[0_0_15px_white]' : ''}
                     `}
-                    style={{ 
-                        borderColor: isEquipped ? rarityColor : undefined,
-                        boxShadow: isEquipped ? `0 0 15px ${rarityColor}` : 'none'
-                    }}
+                    style={{ borderColor: isEquipped ? rarityColor : undefined }}
                 >
                     <span 
-                        className={`material-symbols-outlined text-lg ${isEquipped ? 'text-white' : 'text-gray-500 group-hover:text-white'}`}
+                        className={`material-symbols-outlined text-2xl ${isEquipped ? 'text-white' : 'text-gray-500'}`}
                         style={{ color: isEquipped ? rarityColor : undefined }}
                     >
                         {isEquipped ? item.icon : defaultIcon}
                     </span>
-                </button>
-
-                {/* AR HOLOGRAPHIC LABEL - VISIBLE ON ALL SCREENS */}
-                {isEquipped && (
-                    <motion.div 
-                        initial={{ opacity: 0, x: effectiveSide ? 10 : -10, scale: 0.8 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className={`absolute top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-50
-                            ${effectiveSide ? 'left-full ml-3' : 'right-full mr-3 flex-row-reverse'}
-                        `}
-                        style={{ minWidth: '80px' }}
-                    >
-                        {/* Connecting Line */}
-                        <div className="w-6 h-px bg-current opacity-80" style={{ color: rarityColor }}></div>
-                        <div className="w-1.5 h-1.5 bg-current rounded-full shadow-[0_0_5px_currentColor]" style={{ color: rarityColor }}></div>
-                        
-                        {/* Label Box */}
-                        <div 
-                            className={`bg-black/90 border-t border-b px-3 py-1.5 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.8)] flex flex-col 
-                                ${effectiveSide ? 'items-start text-left border-l-2' : 'items-end text-right border-r-2'}
-                            `}
-                            style={{ 
-                                borderColor: 'rgba(255,255,255,0.2)',
-                                borderLeftColor: effectiveSide ? rarityColor : undefined,
-                                borderRightColor: !effectiveSide ? rarityColor : undefined
-                            }}
-                        >
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-white whitespace-nowrap leading-none mb-1 shadow-black drop-shadow-md">
-                                {item.name}
-                            </p>
-                            <p className="text-[8px] font-mono leading-none font-bold" style={{ color: rarityColor }}>
-                                {item.rarity} CLASS
-                            </p>
+                    {/* Level Badge if equipped */}
+                    {isEquipped && (
+                        <div className="absolute -bottom-2 -right-2 bg-black border text-[8px] font-mono px-1 font-bold shadow-md" style={{ borderColor: rarityColor, color: rarityColor }}>
+                            Lvl.1
                         </div>
-                    </motion.div>
-                )}
+                    )}
+                </button>
+                {/* Always show name underneath for blocky style */}
+                <span className="font-mono text-[8px] text-gray-500 mt-2 uppercase font-bold tracking-widest text-center w-full truncate px-1">
+                    {isEquipped ? item.name : label}
+                </span>
             </div>
         );
    }
 
    return (
-       <div className="h-full flex flex-col relative bg-[#050505] overflow-hidden">
+       <div className="h-full flex flex-col relative bg-[#050505]">
+           {/* CLOSE BUTTON */}
+           {onClose && (
+               <button onClick={() => { playUiSound('CLICK'); onClose(); }} className="absolute top-4 right-4 z-50 p-2 bg-black border border-white/20 text-gray-400 hover:text-white hover:border-red-500 hover:bg-red-500/20 transition-all cursor-pointer">
+                   <span className="material-symbols-outlined font-bold">close</span>
+               </button>
+           )}
+
            {/* TOP TOGGLE */}
            <div className="z-30 p-4 pb-2 flex justify-center w-full bg-gradient-to-b from-[#050505] via-[#050505] to-transparent shrink-0">
                 <div className="flex bg-black border border-primary/30 p-1 rounded-full relative shadow-[0_0_20px_rgba(0,255,255,0.1)]">
@@ -436,7 +379,7 @@ const GearView = ({ profile, onUpdateProfile, initialTab = 'BODY' }: { profile: 
                         onClick={() => { playUiSound('CLICK'); setActiveTab('BODY'); setSelectedSlot(null); }}
                         className={`relative z-10 w-32 py-2 font-mono text-[10px] font-bold tracking-widest transition-colors ${activeTab === 'BODY' ? 'text-white' : 'text-gray-500'}`}
                     >
-                        LOADOUT
+                        CHARACTER
                     </button>
                     <button 
                         onClick={() => { playUiSound('CLICK'); setActiveTab('BAG'); setSelectedSlot(null); }}
@@ -457,74 +400,115 @@ const GearView = ({ profile, onUpdateProfile, initialTab = 'BODY' }: { profile: 
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 1.05 }}
                             transition={{ duration: 0.3 }}
-                            className="h-full flex flex-col items-center justify-center relative perspective-[1000px] overflow-visible"
+                            className="h-full flex flex-col pt-10 px-4"
                         >
-                            {/* HOLOGRAPHIC SCANNER VISUALIZATION */}
-                            <div className="relative w-full h-full flex items-center justify-center preserve-3d mt-[-40px]">
+                            {/* DESTINY STYLE GRID LAYOUT */}
+                            <div className="flex justify-between items-center w-full h-[60%]">
+                                {/* LEFT SLOTS */}
+                                <div className="flex flex-col gap-6 items-center">
+                                    {renderNode('helmet', 'skull', 'Helmet')}
+                                    {renderNode('chest', 'security', 'Chest')}
+                                    {renderNode('shoulderL', 'shield', 'Arms')}
+                                </div>
                                 
-                                {/* 3D Scanner Rings - Background */}
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                     <motion.div 
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                        className="w-[300px] h-[300px] md:w-[380px] md:h-[380px] rounded-full border border-primary/20 absolute" 
-                                        style={{ transform: 'rotateX(75deg) translateZ(-80px)' }}
-                                     ></motion.div>
-                                     <motion.div 
-                                        animate={{ rotate: -360 }}
-                                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                                        className="w-[250px] h-[250px] md:w-[320px] md:h-[320px] rounded-full border border-primary/20 absolute" 
-                                        style={{ transform: 'rotateX(75deg) translateZ(80px)' }}
-                                     ></motion.div>
-                                     {/* Vertical Scanning Plane */}
-                                     <motion.div 
-                                        className="absolute w-[200px] h-[200px] bg-gradient-to-b from-transparent via-primary/10 to-transparent"
-                                        animate={{ opacity: [0.2, 0.5, 0.2], height: ['0%', '100%'] }}
-                                        transition={{ duration: 3, repeat: Infinity }}
-                                     ></motion.div>
+                                {/* CENTER AVATAR PLACEHOLDER */}
+                                <div className="flex-1 h-full mx-4 flex flex-col items-center justify-center relative">
+                                    {/* Stats overlay */}
+                                    <div className="absolute top-0 right-0 text-right">
+                                        <div className="flex items-center gap-1 justify-end">
+                                            <span className="material-symbols-outlined text-yellow-500 text-sm">stars</span>
+                                            <span className="font-display font-black text-3xl text-yellow-500 italic leading-none">{profile.level * 10}</span>
+                                        </div>
+                                        <p className="font-mono text-[8px] text-gray-500 tracking-widest uppercase">POWER LEVEL</p>
+                                    </div>
+
+                                    {/* Blocky Avatar Graphic with Connector Lines */}
+                                    <div className="w-full h-full max-w-[250px] flex flex-col items-center justify-center overflow-visible relative">
+                                        <svg width="100%" height="100%" viewBox="0 0 200 300" className="absolute inset-0 pointer-events-none">
+                                            {/* Connecting Lines */}
+                                            {/* Left side: Helmet, Chest, Arms */}
+                                            <line x1="100" y1="50" x2="20" y2="50" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            <line x1="100" y1="120" x2="20" y2="120" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            <line x1="60" y1="150" x2="20" y2="190" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            
+                                            {/* Right side: Weapon, Legs, Class */}
+                                            <line x1="140" y1="150" x2="180" y2="50" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            <line x1="100" y1="200" x2="180" y2="120" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            <line x1="100" y1="250" x2="180" y2="190" stroke="#00FFFF" strokeWidth="1" strokeDasharray="4 2" opacity="0.4"/>
+                                            
+                                            {/* Blocky Figure */}
+                                            {/* Head */}
+                                            <rect x="80" y="30" width="40" height="40" fill="#2d3748" stroke="#718096" strokeWidth="2" />
+                                            {/* Torso */}
+                                            <rect x="70" y="80" width="60" height="90" fill="#1a202c" stroke="#4a5568" strokeWidth="2" />
+                                            {/* Left Arm */}
+                                            <rect x="40" y="80" width="20" height="80" fill="#2d3748" stroke="#4a5568" strokeWidth="2" />
+                                            {/* Right Arm */}
+                                            <rect x="140" y="80" width="20" height="80" fill="#2d3748" stroke="#4a5568" strokeWidth="2" />
+                                            {/* Left Leg */}
+                                            <rect x="75" y="180" width="20" height="90" fill="#1a202c" stroke="#4a5568" strokeWidth="2" />
+                                            {/* Right Leg */}
+                                            <rect x="105" y="180" width="20" height="90" fill="#1a202c" stroke="#4a5568" strokeWidth="2" />
+                                        </svg>
+                                    </div>
                                 </div>
 
-                                {/* CYBER MANNEQUIN - SVG HOLOGRAM */}
-                                <motion.div 
-                                    className="relative z-10 w-[280px] md:w-[320px] h-[400px] flex items-center justify-center"
-                                    animate={{ rotateY: [-5, 5, -5] }}
-                                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                                >
-                                    <HologramBody />
-
-                                    {/* INTERACTIVE NODES - ALIGNED TO SVG ANATOMY */}
-                                    {/* Helmet: Top Center Head */}
-                                    {renderNode('helmet', '50%', '13%', 'skull')}
-                                    
-                                    {/* Shoulders: Ends of the trapezoid */}
-                                    {renderNode('shoulderL', '35%', '23%', 'shield')}
-                                    {renderNode('shoulderR', '65%', '23%', 'shield')}
-                                    
-                                    {/* Chest: Center Torso */}
-                                    {renderNode('chest', '50%', '30%', 'security')}
-                                    
-                                    {/* Hands/Rings: End of arm paths */}
-                                    {renderNode('finger1', '23%', '55%', 'diamond')}
-                                    {renderNode('finger2', '77%', '55%', 'diamond')}
-                                    
-                                    {/* Weapon: Floating distinctly to right side */}
-                                    {renderNode('weapon', '85%', '45%', 'swords')}
-                                    
-                                    {/* Legs: Knee positions */}
-                                    {renderNode('legs', '50%', '70%', 'accessibility_new')}
-                                    
-                                    {/* Shoes: Bottom of leg paths */}
-                                    {renderNode('shoes', '50%', '95%', 'do_not_step')}
-                                </motion.div>
+                                {/* RIGHT SLOTS */}
+                                <div className="flex flex-col gap-6 items-center">
+                                    {renderNode('weapon', 'swords', 'Weapon')}
+                                    {renderNode('legs', 'directions_run', 'Legs')}
+                                    {renderNode('shoes', 'do_not_step', 'Class')}
+                                </div>
                             </div>
+
+                            {/* SELECTION DRAWER */}
+                            {selectedSlot && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 50 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="absolute bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/20 p-4 h-[40%] overflow-y-auto z-40 shadow-[0_-10px_30px_rgba(0,0,0,1)]"
+                                >
+                                    <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                                        <h3 className="font-display font-bold text-lg text-white uppercase">{selectedSlot} Inventory</h3>
+                                        <button onClick={() => setSelectedSlot(null)} className="text-gray-500 hover:text-white"><span className="material-symbols-outlined">close</span></button>
+                                    </div>
+                                    
+                                    {slotItems.length === 0 ? (
+                                        <p className="text-gray-500 font-mono text-xs text-center mt-8">No compatible items found.</p>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            {slotItems.map((item, i) => {
+                                                const rarityColor = getRarityColor(item.rarity);
+                                                return (
+                                                    <div key={i} className="flex items-center gap-3 bg-white/5 border p-2 hover:bg-white/10 transition-colors" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+                                                        <div className="w-10 h-10 bg-black border flex items-center justify-center shrink-0" style={{ borderColor: rarityColor, color: rarityColor }}>
+                                                            <span className="material-symbols-outlined">{item.icon}</span>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className="font-bold text-white text-xs truncate uppercase" style={{ color: rarityColor }}>{item.name}</h4>
+                                                            <p className="text-[9px] font-mono text-gray-400">{item.description}</p>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => handleEquip(item)}
+                                                            className="px-4 py-2 bg-black border border-white/30 text-[10px] font-bold text-white hover:bg-white hover:text-black transition-colors"
+                                                        >
+                                                            EQUIP
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
                         </motion.div>
                     ) : (
                         /* INVENTORY LIST VIEW */
                         <motion.div 
                             key="bag"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.05 }}
                             transition={{ duration: 0.3 }}
                             className="absolute inset-0 p-4 overflow-y-auto no-scrollbar pb-20"
                         >
@@ -559,139 +543,142 @@ const GearView = ({ profile, onUpdateProfile, initialTab = 'BODY' }: { profile: 
                         </motion.div>
                     )}
                 </AnimatePresence>
-
-               {/* SELECTION DRAWER */}
-               <AnimatePresence>
-                   {selectedSlot && (
-                       <motion.div 
-                           initial={{ y: '100%' }}
-                           animate={{ y: 0 }}
-                           exit={{ y: '100%' }}
-                           className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c] border-t border-primary/50 p-4 z-40 shadow-[0_-10px_50px_rgba(0,0,0,0.9)] max-h-[50%]"
-                       >
-                           <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                               <h3 className="font-display font-bold text-white uppercase tracking-wider">SELECT {selectedSlot}</h3>
-                               {profile.equipped[selectedSlot] && (
-                                   <button onClick={() => handleUnequip(selectedSlot as EquipmentSlot)} className="text-[9px] text-red-500 border border-red-500/50 px-2 py-1 hover:bg-red-900/20">UNEQUIP CURRENT</button>
-                               )}
-                               <button onClick={() => setSelectedSlot(null)} className="ml-2 text-gray-500"><span className="material-symbols-outlined">close</span></button>
-                           </div>
-                           
-                           <div className="overflow-y-auto max-h-[200px] no-scrollbar space-y-2">
-                               {slotItems.length === 0 ? (
-                                   <p className="text-center text-gray-500 font-mono text-xs py-4">NO COMPATIBLE GEAR FOUND</p>
-                               ) : (
-                                   slotItems.map((item, i) => (
-                                       <button 
-                                           key={i} 
-                                           onClick={() => handleEquip(item)}
-                                           className="w-full flex items-center gap-3 p-2 bg-black border border-white/10 hover:border-primary text-left group transition-all"
-                                       >
-                                           <span className="material-symbols-outlined text-gray-400 group-hover:text-primary">{item.icon}</span>
-                                           <div>
-                                               <p className="text-sm font-bold text-white group-hover:text-primary">{item.name}</p>
-                                               <p className="text-[9px] text-gray-500">{item.rarity}</p>
-                                           </div>
-                                       </button>
-                                   ))
-                               )}
-                           </div>
-                       </motion.div>
-                   )}
-               </AnimatePresence>
            </div>
        </div>
    );
 };
 
-const ShopView = ({ profile, onPurchase }: { profile: PlayerProfile, onPurchase: (item: any) => void }) => {
+const ShopView = ({ profile, onPurchase, onClose }: { profile: PlayerProfile, onPurchase: (item: any) => void, onClose?: () => void }) => {
+    const [confirmItem, setConfirmItem] = useState<any>(null);
+    const [justBought, setJustBought] = useState<string | null>(null);
+
     // EXPANDED SHOP TO COVER ALL 9 SLOTS + CONSUMABLES
     const SHOP_ITEMS = [
         // 1. Weapon
-        { name: "Iron Dagger", cost: 100, currency: 'IRON' as const, type: 'WEAPON', rarity: 'COMMON', icon: 'swords', desc: "Sharp enough. +1 STR", stats: { str: 1 } },
-        { name: "Shadow Blade", cost: 2500, currency: 'IRON' as const, type: 'WEAPON', rarity: 'RARE', icon: 'colorize', desc: "Vibrates with power. +5 AGI", stats: { agi: 5 } },
-
+        { name: "Iron Dagger", cost: 100, currency: 'IRON' as const, type: 'WEAPON', rarity: 'COMMON', icon: 'swords', description: "Sharp enough. +1 STR", stats: { str: 1 } },
+        { name: "Shadow Blade", cost: 2500, currency: 'IRON' as const, type: 'WEAPON', rarity: 'RARE', icon: 'colorize', description: "Vibrates with power. +5 AGI", stats: { agi: 5 } },
         // 2. Helmet
-        { name: "Recruit Helm", cost: 150, currency: 'IRON' as const, type: 'HELMET', rarity: 'COMMON', icon: 'skull', desc: "Standard Issue. +2 VIT", stats: { vit: 2 } },
-        { name: "Tactical Visor", cost: 800, currency: 'IRON' as const, type: 'HELMET', rarity: 'UNCOMMON', icon: 'visibility', desc: "Scanner Enhanced. +3 INT", stats: { int: 3 } },
-
+        { name: "Recruit Helm", cost: 150, currency: 'IRON' as const, type: 'HELMET', rarity: 'COMMON', icon: 'skull', description: "Standard Issue. +2 VIT", stats: { vit: 2 } },
+        { name: "Tactical Visor", cost: 800, currency: 'IRON' as const, type: 'HELMET', rarity: 'UNCOMMON', icon: 'visibility', description: "Scanner Enhanced. +3 INT", stats: { int: 3 } },
         // 3. Chest
-        { name: "Leather Vest", cost: 200, currency: 'IRON' as const, type: 'CHEST', rarity: 'COMMON', icon: 'security', desc: "Light protection. +3 VIT", stats: { vit: 3 } },
-        { name: "Plated Mail", cost: 1000, currency: 'IRON' as const, type: 'CHEST', rarity: 'RARE', icon: 'shield', desc: "Heavy Defense. +8 VIT", stats: { vit: 8 } },
-
+        { name: "Leather Vest", cost: 200, currency: 'IRON' as const, type: 'CHEST', rarity: 'COMMON', icon: 'security', description: "Light protection. +3 VIT", stats: { vit: 3 } },
+        { name: "Plated Mail", cost: 1000, currency: 'IRON' as const, type: 'CHEST', rarity: 'RARE', icon: 'shield', description: "Heavy Defense. +8 VIT", stats: { vit: 8 } },
         // 4. Shoulder L
-        { name: "Left Pad", cost: 75, currency: 'IRON' as const, type: 'SHOULDER', rarity: 'COMMON', icon: 'shield', desc: "Left Guard. +1 VIT", stats: { vit: 1 } },
-        
+        { name: "Left Pad", cost: 75, currency: 'IRON' as const, type: 'SHOULDER', rarity: 'COMMON', icon: 'shield', description: "Left Guard. +1 VIT", stats: { vit: 1 } },
         // 5. Shoulder R
-        { name: "Right Pad", cost: 75, currency: 'IRON' as const, type: 'SHOULDER', rarity: 'COMMON', icon: 'shield', desc: "Right Guard. +1 VIT", stats: { vit: 1 } },
-
+        { name: "Right Pad", cost: 75, currency: 'IRON' as const, type: 'SHOULDER', rarity: 'COMMON', icon: 'shield', description: "Right Guard. +1 VIT", stats: { vit: 1 } },
         // 6. Finger 1
-        { name: "Bronze Ring", cost: 500, currency: 'IRON' as const, type: 'RING', rarity: 'UNCOMMON', icon: 'diamond', desc: "+2 STR", stats: { str: 2 } },
-        
+        { name: "Bronze Ring", cost: 500, currency: 'IRON' as const, type: 'RING', rarity: 'UNCOMMON', icon: 'diamond', description: "+2 STR", stats: { str: 2 } },
         // 7. Finger 2
-        { name: "Silver Band", cost: 500, currency: 'IRON' as const, type: 'RING', rarity: 'UNCOMMON', icon: 'diamond', desc: "+2 INT", stats: { int: 2 } },
-        { name: "Gold Ring", cost: 1200, currency: 'IRON' as const, type: 'RING', rarity: 'RARE', icon: 'diamond', desc: "+4 STR", stats: { str: 4 } },
-
+        { name: "Silver Band", cost: 500, currency: 'IRON' as const, type: 'RING', rarity: 'UNCOMMON', icon: 'diamond', description: "+2 INT", stats: { int: 2 } },
+        { name: "Gold Ring", cost: 1200, currency: 'IRON' as const, type: 'RING', rarity: 'RARE', icon: 'diamond', description: "+4 STR", stats: { str: 4 } },
         // 8. Legs
-        { name: "Canvas Pants", cost: 120, currency: 'IRON' as const, type: 'LEGS', rarity: 'COMMON', icon: 'accessibility_new', desc: "Flexible. +1 AGI", stats: { agi: 1 } },
-        { name: "Exo-Legs", cost: 1500, currency: 'IRON' as const, type: 'LEGS', rarity: 'EPIC', icon: 'directions_run', desc: "Hydraulic assist. +5 STR", stats: { str: 5 } },
-
+        { name: "Canvas Pants", cost: 120, currency: 'IRON' as const, type: 'LEGS', rarity: 'COMMON', icon: 'accessibility_new', description: "Flexible. +1 AGI", stats: { agi: 1 } },
+        { name: "Exo-Legs", cost: 1500, currency: 'IRON' as const, type: 'LEGS', rarity: 'EPIC', icon: 'directions_run', description: "Hydraulic assist. +5 STR", stats: { str: 5 } },
         // 9. Shoes
-        { name: "Running Shoes", cost: 100, currency: 'IRON' as const, type: 'SHOES', rarity: 'COMMON', icon: 'do_not_step', desc: "Good grip. +2 AGI", stats: { agi: 2 } },
-        { name: "Combat Boots", cost: 600, currency: 'IRON' as const, type: 'SHOES', rarity: 'UNCOMMON', icon: 'do_not_step', desc: "Heavy tread. +3 VIT", stats: { vit: 3 } },
-
+        { name: "Running Shoes", cost: 100, currency: 'IRON' as const, type: 'SHOES', rarity: 'COMMON', icon: 'do_not_step', description: "Good grip. +2 AGI", stats: { agi: 2 } },
+        { name: "Combat Boots", cost: 600, currency: 'IRON' as const, type: 'SHOES', rarity: 'UNCOMMON', icon: 'do_not_step', description: "Heavy tread. +3 VIT", stats: { vit: 3 } },
         // Consumables
-        { name: "Recovery Pot", cost: 50, currency: 'IRON' as const, type: 'CONSUMABLE', rarity: 'COMMON', icon: 'local_drink', desc: "Restores 50 HP." },
-        { name: "XP Booster", cost: 10, currency: 'CRYSTALS' as const, type: 'BUFF', rarity: 'RARE', icon: 'rocket_launch', desc: "+50% XP for 1 Run." },
+        { name: "Recovery Pot", cost: 50, currency: 'IRON' as const, type: 'CONSUMABLE', rarity: 'COMMON', icon: 'local_drink', description: "Restores 50 HP." },
+        { name: "XP Booster", cost: 10, currency: 'CRYSTALS' as const, type: 'BUFF', rarity: 'RARE', icon: 'rocket_launch', description: "+50% XP for 1 Run." },
     ];
 
-    const buy = async (item: any) => {
+    const getRarityColor = (rarity?: string) => {
+        switch(rarity) {
+            case 'UNCOMMON': return '#22c55e';
+            case 'RARE': return '#3b82f6';
+            case 'EPIC': return '#a855f7';
+            case 'LEGENDARY': return '#eab308';
+            default: return '#ffffff';
+        }
+    };
+
+    const confirmBuy = async () => {
+        if (!confirmItem) return;
         playUiSound('CLICK');
-        const res = await GameService.purchaseItem(profile, item);
+        const res = await GameService.purchaseItem(profile, confirmItem);
         if (res.success) {
             playUiSound('CONFIRM');
-            onPurchase(item); 
+            onPurchase(confirmItem); 
+            setJustBought(`+1 ${confirmItem.name}`);
+            setConfirmItem(null);
+            setTimeout(() => setJustBought(null), 2000);
         } else {
             playUiSound('ERROR');
             alert(res.message);
+            setConfirmItem(null);
         }
     };
 
     return (
-       <div className="h-full flex flex-col">
-          <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
-             <h2 className="font-display font-bold text-2xl text-white">SUPPLY DEPOT</h2>
-             <div className="flex gap-3 text-xs font-mono">
-                 <span className="text-white">{profile.iron} IRON</span>
-                 <span className="text-blue-400">{profile.crystals} CRYS</span>
-             </div>
-          </div>
-          <div className="space-y-3 overflow-y-auto no-scrollbar pb-4">
-              {SHOP_ITEMS.map((item, i) => (
-                  <div key={i} className="flex flex-col bg-[#0a0a0a] border border-white/10 p-3 hover:border-primary/50 transition-all relative overflow-hidden group">
-                      <div className="flex items-center gap-4 relative z-10">
-                          <div className="w-12 h-12 flex items-center justify-center bg-black border border-white/10 text-2xl shadow-inner">
-                              <span className="material-symbols-outlined text-white">{item.icon}</span>
+       <div className="h-full flex flex-col relative bg-[#050505]">
+          {onClose && (
+              <button onClick={() => { playUiSound('CLICK'); onClose(); }} className="absolute top-4 right-4 z-50 p-2 bg-black border border-white/20 text-gray-400 hover:text-white hover:border-red-500 hover:bg-red-500/20 transition-all cursor-pointer">
+                  <span className="material-symbols-outlined font-bold">close</span>
+              </button>
+          )}
+
+          {/* CONFIRMATION POPUP */}
+          <AnimatePresence>
+              {confirmItem && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                      <div className="bg-[#111] border border-white/20 p-6 max-w-sm w-full text-center shadow-[0_0_30px_rgba(0,0,0,1)]">
+                          <h3 className="font-display font-bold text-xl text-white mb-4">Confirm Purchase</h3>
+                          <div className="w-16 h-16 mx-auto bg-black border mb-4 flex items-center justify-center" style={{ borderColor: getRarityColor(confirmItem.rarity), color: getRarityColor(confirmItem.rarity) }}>
+                              <span className="material-symbols-outlined text-3xl">{confirmItem.icon}</span>
                           </div>
-                          <div className="flex-1">
-                              <div className="flex justify-between items-start">
-                                  <h4 className="font-bold text-white text-sm uppercase">{item.name}</h4>
-                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 border ${item.currency === 'IRON' ? 'border-gray-500 text-gray-400' : 'border-blue-500 text-blue-400'}`}>
-                                      {item.cost} {item.currency === 'IRON' ? 'I' : 'C'}
-                                  </span>
-                              </div>
-                              <p className="font-mono text-[10px] text-gray-500 leading-tight mt-1">{item.desc}</p>
-                              {item.stats && <p className="font-mono text-[9px] text-primary mt-1">{Object.entries(item.stats).map(([k,v]) => `${k.toUpperCase()}+${v}`).join(' ')}</p>}
+                          <p className="font-bold text-white uppercase text-lg mb-2" style={{ color: getRarityColor(confirmItem.rarity) }}>{confirmItem.name}</p>
+                          <p className="font-mono text-gray-400 text-sm mb-6">Cost: {confirmItem.cost} {confirmItem.currency}</p>
+                          <div className="flex gap-4">
+                              <button onClick={() => setConfirmItem(null)} className="flex-1 py-3 bg-white/10 text-white font-bold uppercase tracking-widest hover:bg-white/20 transition-colors border border-white/20">Cancel</button>
+                              <button onClick={confirmBuy} className="flex-1 py-3 bg-primary text-black font-bold uppercase tracking-widest hover:bg-white transition-colors">Confirm</button>
                           </div>
                       </div>
-                      <button 
-                          onClick={() => buy(item)}
-                          className="mt-3 w-full py-2 bg-white/5 border border-white/10 hover:bg-primary hover:text-black hover:border-primary transition-colors text-[10px] font-bold uppercase tracking-widest"
-                      >
-                          PURCHASE
-                      </button>
-                  </div>
-              ))}
+                  </motion.div>
+              )}
+              {justBought && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="absolute top-20 left-1/2 -translate-x-1/2 bg-green-500/90 text-black px-6 py-3 font-display font-black text-xl italic uppercase shadow-[0_0_20px_rgba(34,197,94,0.5)] z-50 border border-green-300">
+                      {justBought}
+                  </motion.div>
+              )}
+          </AnimatePresence>
+
+          <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-4 pt-4 px-4">
+             <h2 className="font-display font-bold text-2xl text-white">SUPPLY DEPOT</h2>
+             <div className="flex gap-4 text-sm font-mono font-bold mr-12">
+                 <span className="text-white bg-white/10 px-3 py-1 rounded shadow-inner">{profile.iron} IRON</span>
+                 <span className="text-blue-400 bg-blue-900/30 px-3 py-1 rounded shadow-inner">{profile.crystals} CRYS</span>
+             </div>
+          </div>
+          <div className="space-y-3 overflow-y-auto no-scrollbar pb-4 px-4">
+              {SHOP_ITEMS.map((item, i) => {
+                  const rarityColor = getRarityColor(item.rarity);
+                  return (
+                      <div key={i} className="flex flex-col bg-[#0a0a0a] border border-white/10 p-3 hover:border-white/30 transition-all relative overflow-hidden group" style={{ borderLeftColor: rarityColor, borderLeftWidth: '3px' }}>
+                          <div className="flex items-center gap-4 relative z-10">
+                              <div className="w-12 h-12 flex items-center justify-center bg-black border border-white/10 text-2xl shadow-inner" style={{ color: rarityColor }}>
+                                  <span className="material-symbols-outlined">{item.icon}</span>
+                              </div>
+                              <div className="flex-1">
+                                  <div className="flex justify-between items-start">
+                                      <h4 className="font-bold text-sm uppercase" style={{ color: rarityColor }}>{item.name}</h4>
+                                      <span className={`text-[10px] font-bold px-1.5 py-0.5 border ${item.currency === 'IRON' ? 'border-gray-500 text-gray-400 bg-black' : 'border-blue-500 text-blue-400 bg-blue-900/30'}`}>
+                                          {item.cost} {item.currency === 'IRON' ? 'I' : 'C'}
+                                      </span>
+                                  </div>
+                                  <p className="font-mono text-[10px] text-gray-500 leading-tight mt-1">{item.description}</p>
+                                  {item.stats && <p className="font-mono text-[9px] text-primary mt-1">{Object.entries(item.stats).map(([k,v]) => `${k.toUpperCase()}+${v}`).join(' ')}</p>}
+                              </div>
+                          </div>
+                          <button 
+                              onClick={() => { playUiSound('CLICK'); setConfirmItem(item); }}
+                              className="mt-3 w-full py-2 bg-white/5 border border-white/10 hover:bg-white hover:text-black hover:border-white transition-colors text-[10px] font-bold uppercase tracking-widest"
+                          >
+                              PURCHASE
+                          </button>
+                      </div>
+                  );
+              })}
           </div>
        </div>
     );
@@ -719,12 +706,12 @@ const DungeonView = ({ onEnter, profile, onSelectExercise }: { onEnter?: () => v
    const getStatus = (reqLvl: number) => profile.level >= reqLvl ? 'OPEN' : 'LOCKED';
 
    const DUNGEONS = [
-      { id: 'E-1', name: 'SLIME BASIN', exercise: 'SQUATS', gem: 'TOPAZ', lvl: '1-5', reqLvl: 1, x: 250, y: 250, color: 'yellow', icon: 'square' },
+      { id: 'E-1', name: 'SLIME BASIN', exercise: 'PUSH-UPS', gem: 'TOPAZ', lvl: '1-5', reqLvl: 1, x: 250, y: 250, color: 'yellow', icon: 'square' },
       { id: 'E-2', name: 'EMBER PITS', exercise: 'PUSH-UPS', gem: 'RUBY', lvl: '5-10', reqLvl: 5, x: 450, y: 150, color: 'red', icon: 'diamond' },
-      { id: 'D-1', name: 'MISTY LAGOON', exercise: 'PULL-UPS', gem: 'SAPPHIRE', lvl: '11-20', reqLvl: 11, x: 650, y: 450, color: 'blue', icon: 'water_drop' },
-      { id: 'C-1', name: 'JUNGLE RUINS', exercise: 'LUNGES', gem: 'EMERALD', lvl: '21-30', reqLvl: 21, x: 150, y: 650, color: 'emerald', icon: 'hexagon' },
-      { id: 'B-1', name: 'VOID RIFT', exercise: 'BURPEES', gem: 'AMETHYST', lvl: '31-40', reqLvl: 31, x: 800, y: 300, color: 'purple', icon: 'star' },
-      { id: 'A-1', name: 'SKY CITADEL', exercise: 'MUSCLE-UPS', gem: 'ALL', lvl: '50+', reqLvl: 50, x: 500, y: 850, color: 'white', icon: 'crown' },
+      { id: 'D-1', name: 'MISTY LAGOON', exercise: 'PUSH-UPS', gem: 'SAPPHIRE', lvl: '11-20', reqLvl: 11, x: 650, y: 450, color: 'blue', icon: 'water_drop' },
+      { id: 'C-1', name: 'JUNGLE RUINS', exercise: 'PUSH-UPS', gem: 'EMERALD', lvl: '21-30', reqLvl: 21, x: 150, y: 650, color: 'emerald', icon: 'hexagon' },
+      { id: 'B-1', name: 'VOID RIFT', exercise: 'PUSH-UPS', gem: 'AMETHYST', lvl: '31-40', reqLvl: 31, x: 800, y: 300, color: 'purple', icon: 'star' },
+      { id: 'A-1', name: 'SKY CITADEL', exercise: 'PUSH-UPS', gem: 'ALL', lvl: '50+', reqLvl: 50, x: 500, y: 850, color: 'white', icon: 'crown' },
    ].map(d => ({ ...d, status: getStatus(d.reqLvl) }));
 
    const getStyles = (color: string, isLocked: boolean) => {
@@ -903,21 +890,129 @@ const InventoryView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, o
    );
 };
 
-const SkillsView = () => (
-    <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-        <span className="material-symbols-outlined text-6xl text-gray-700 mb-4">stars</span>
-        <h2 className="text-2xl font-display font-bold text-gray-500 uppercase">Skill Tree Locked</h2>
-        <p className="font-mono text-xs text-gray-600 mt-2">REQUIRES LEVEL 5 TO ACCESS NEURAL MAP</p>
-    </div>
-);
+const SkillsView = () => {
+    const progressions = [
+        {
+            title: 'Push Progression',
+            active: true,
+            nodes: [
+                { name: 'WALL PUSH-UPS', status: 'COMPLETED', color: 'bg-primary border-primary shadow-[0_0_15px_rgba(0,255,255,0.4)]', icon: 'check_circle', text: 'text-black' },
+                { name: 'INCLINE PUSH-UPS', status: 'COMPLETED', color: 'bg-primary border-primary shadow-[0_0_15px_rgba(0,255,255,0.4)]', icon: 'check_circle', text: 'text-black' },
+                { name: 'KNEE PUSH-UPS', status: 'ACTIVE', color: 'bg-yellow-500 border-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.6)] animate-pulse', icon: 'play_arrow', text: 'text-black' },
+                { name: 'STANDARD PUSH-UPS', status: 'LOCKED', color: 'bg-black border-gray-700', icon: 'lock', text: 'text-gray-500' },
+                { name: 'ONE-ARM PUSH-UPS', status: 'S-TIER', color: 'bg-black border-purple-500 shadow-[inset_0_0_15px_rgba(168,85,247,0.3)]', icon: 'star', text: 'text-purple-400' }
+            ]
+        },
+        { title: 'Pull Progression', active: false },
+        { title: 'Core Progression', active: false },
+        { title: 'Leg Progression', active: false },
+        { title: 'Cardio Progression', active: false }
+    ];
+
+    return (
+        <div className="h-full flex flex-col p-6 bg-[#050505] overflow-y-auto no-scrollbar gap-8 pb-20">
+            {progressions.map((prog, idx) => (
+                <div key={idx} className="flex flex-col">
+                    <h2 className="text-xl font-display font-bold text-white uppercase tracking-widest mb-4 border-b border-primary/20 pb-2 flex justify-between items-end">
+                        <span>{prog.title}</span>
+                        {!prog.active && <span className="text-[10px] text-gray-500 bg-gray-900 px-2 py-1 rounded">COMING SOON</span>}
+                    </h2>
+                    
+                    {prog.active ? (
+                        <div className="flex-1 flex gap-4 overflow-x-auto no-scrollbar pb-8 items-center relative min-h-[200px]">
+                            {/* The Connecting Line */}
+                            <div className="absolute top-1/2 left-0 w-[1000px] h-1 bg-gray-800 -translate-y-1/2 z-0">
+                                <div className="h-full w-[40%] bg-primary shadow-[0_0_10px_cyan]"></div>
+                            </div>
+
+                            {prog.nodes?.map((node, i) => (
+                                <div key={i} className={`relative z-10 flex flex-col items-center justify-center p-4 min-w-[160px] h-[160px] rounded-md border-2 ${node.color} shrink-0`}>
+                                    <span className={`material-symbols-outlined text-4xl mb-2 ${node.text}`}>{node.icon}</span>
+                                    <h4 className={`font-bold uppercase text-center text-sm leading-tight ${node.text}`}>{node.name}</h4>
+                                    <p className={`font-mono text-[10px] mt-2 font-bold tracking-widest ${node.text} opacity-80`}>{node.status}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="w-full h-[120px] border border-dashed border-gray-800 flex items-center justify-center bg-white/5 rounded-md">
+                            <p className="font-mono text-gray-600 text-xs tracking-widest uppercase">
+                                <span className="material-symbols-outlined text-sm align-middle mr-2">construction</span>
+                                IN DEVELOPMENT
+                            </p>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+};
 
 const TributeView = () => (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-        <span className="material-symbols-outlined text-6xl text-gray-700 mb-4">local_fire_department</span>
-        <h2 className="text-2xl font-display font-bold text-gray-500 uppercase">Tribute Altar</h2>
-        <p className="font-mono text-xs text-gray-600 mt-2">SACRIFICE ITEM FEATURE COMING SOON</p>
+        <span className="material-symbols-outlined text-6xl text-yellow-500 mb-4 animate-pulse">volunteer_activism</span>
+        <h2 className="text-2xl font-display font-bold text-white uppercase">Support the System</h2>
+        <p className="font-mono text-xs text-gray-400 mt-2 max-w-[250px] mb-6">Donate $1 to unlock the Permanent OG Supporter Badge and keep the servers running.</p>
+        <button onClick={() => playUiSound('CONFIRM')} className="bg-yellow-500 text-black font-bold px-6 py-3 uppercase tracking-widest hover:bg-yellow-400 transition-colors shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+             Donate $1
+        </button>
     </div>
 );
+
+const BattlePassView = () => {
+    const TIERS = [1, 2, 3, 4, 5, 6, 7];
+    return (
+        <div className="h-full flex flex-col p-4 overflow-hidden bg-[#050505]">
+            <div className="flex justify-between items-center mb-4 shrink-0">
+                <h2 className="text-3xl font-display font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                    <span className="material-symbols-outlined text-purple-500">badge</span> HUNTER PASS
+                </h2>
+                <button onClick={() => playUiSound('CLICK')} className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold uppercase hover:scale-105 transition-transform shadow-lg border border-purple-400">
+                    Activate Premium ($9.99)
+                </button>
+            </div>
+            
+            <div className="flex-1 overflow-x-auto no-scrollbar relative flex flex-col justify-center">
+                
+                {/* Premium Track */}
+                <div className="flex items-center gap-2 mb-2 w-max px-2">
+                    <div className="w-24 shrink-0 text-center text-purple-400 font-bold text-xs uppercase bg-purple-900/30 p-2 rounded h-[100px] flex items-center justify-center border border-purple-500/50 shadow-inner">PREMIUM</div>
+                    {TIERS.map(t => (
+                        <div key={`p-${t}`} className="w-[120px] h-[100px] shrink-0 bg-gradient-to-br from-purple-900/50 to-black border border-purple-500/50 rounded flex flex-col items-center justify-center relative hover:scale-105 transition-transform cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                            <span className="absolute top-1 left-2 font-mono text-[10px] text-purple-300 font-bold">{t}</span>
+                            <span className="material-symbols-outlined text-3xl text-purple-400 mb-1">workspace_premium</span>
+                            <span className="text-[10px] font-bold text-white uppercase">Epic Loot</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Path line */}
+                <div className="w-max px-2 min-w-full">
+                    <div className="w-full h-2 bg-gray-800 rounded-full my-4 relative">
+                        <div className="absolute left-0 top-0 h-full w-[25%] bg-primary rounded-full shadow-[0_0_10px_cyan]"></div>
+                    </div>
+                </div>
+
+                {/* Free Track */}
+                <div className="flex items-center gap-2 mt-2 w-max px-2">
+                    <div className="w-24 shrink-0 text-center text-gray-400 font-bold text-xs uppercase bg-white/5 p-2 rounded h-[100px] flex items-center justify-center border border-white/10">FREE</div>
+                    {TIERS.map(t => (
+                        <div key={`f-${t}`} className="w-[120px] h-[100px] shrink-0 bg-black border border-white/10 rounded flex flex-col items-center justify-center relative hover:border-white/30 transition-colors">
+                            <span className="absolute top-1 left-2 font-mono text-[10px] text-gray-500 font-bold">{t}</span>
+                            {t % 2 !== 0 ? (
+                                <>
+                                    <span className="material-symbols-outlined text-3xl text-gray-400 mb-1">diamond</span>
+                                    <span className="text-[10px] font-bold text-white uppercase">100 Iron</span>
+                                </>
+                            ) : (
+                                <span className="text-gray-700 font-mono text-xs">--</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const GuildsView = () => (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center">
@@ -1362,6 +1457,12 @@ const GameLobby: React.FC<GameLobbyProps> = ({ onNavigate, profile, onUpdateProf
   }, [profile.level]);
   
   const handlePurchase = async (item: any) => {
+      const res = await GameService.purchaseItem(profile, item);
+      if (res.success && res.newProfile) {
+          if (onUpdateProfile) onUpdateProfile(res.newProfile);
+      } else {
+          alert(res.message);
+      }
       setRefreshKey(prev => prev + 1);
   };
 
@@ -1595,43 +1696,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({ onNavigate, profile, onUpdateProf
              <div className="absolute w-[200px] h-[200px] bg-black rounded-full blur-3xl opacity-90"></div>
              <div className="absolute w-[160px] h-[160px] bg-purple-900/20 rounded-full blur-3xl animate-pulse"></div>
              
-             <motion.div
-                animate={{ y: [-6, 6, -6] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative z-10 w-40 h-52 cursor-pointer group"
-                style={{ filter: 'url(#dragon-edge)' }}
-             >
-                <div className="absolute -inset-6 bg-purple-900/30 blur-2xl rounded-[50%] opacity-60 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative w-full h-full overflow-hidden rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] shadow-[0_0_50px_rgba(88,28,135,0.4)] border border-purple-500/40 bg-[#1a0526]">
-                   <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-black to-black opacity-80"></div>
-                   <div className="absolute inset-0 opacity-40 mix-blend-overlay" style={{ backgroundImage: `radial-gradient(circle at 50% 0%, #a855f7 10%, transparent 12%), radial-gradient(circle at 50% 100%, #000 10%, transparent 12%)`, backgroundSize: '24px 24px', backgroundPosition: '0 0, 12px 12px' }}></div>
-                   <div className="absolute inset-0 opacity-30 mix-blend-color-dodge" style={{ backgroundImage: `radial-gradient(circle at 50% 0, rgba(255,255,255,0.3) 5%, transparent 60%), radial-gradient(circle at 50% 100%, rgba(0,0,0,0.8) 5%, transparent 60%)`, backgroundSize: '24px 24px', backgroundPosition: '0 0, 12px 12px' }}></div>
-                   <div className="absolute inset-0 shadow-[inset_15px_-15px_40px_rgba(0,0,0,1),inset_-5px_5px_20px_rgba(255,255,255,0.1)]"></div>
-                   <div className="absolute inset-0 bg-purple-600 mix-blend-overlay opacity-0 animate-pulse-fast"></div>
-                </div>
-             </motion.div>
-
-             {/* HATCH ME TRIGGER */}
-             <motion.button
-                onClick={() => { playUiSound('CONFIRM'); onNavigate && onNavigate(Step.EGG_BATTLE); }}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.05 }}
-                className="absolute top-12 right-4 z-50 cursor-pointer"
-             >
-                <div className="bg-black/90 border border-primary/50 p-2 shadow-[0_0_15px_rgba(0,255,255,0.3)] backdrop-blur-md relative group-hover:bg-primary/10 transition-colors max-w-[140px]">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-outlined text-yellow-400 text-sm animate-bounce">auto_awesome</span>
-                        <span className="text-[10px] font-bold text-white uppercase leading-none">Mystery</span>
-                    </div>
-                    <p className="font-mono text-[9px] text-primary font-bold uppercase leading-tight">
-                        Hatch me for<br/>Mystery Prize
-                    </p>
-                    {/* Connecting Line to Egg */}
-                    <div className="absolute top-1/2 -left-8 w-8 h-px bg-primary/50"></div>
-                    <div className="absolute top-1/2 -left-8 w-1 h-1 bg-primary rounded-full shadow-[0_0_5px_cyan]"></div>
-                </div>
-             </motion.button>
+             {/* EGG MECHANIC REMOVED TO FIT REHAB THEME */}
 
              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-4 bg-black/50 blur-xl rounded-full"></div>
           </div>
@@ -1669,15 +1734,15 @@ const GameLobby: React.FC<GameLobbyProps> = ({ onNavigate, profile, onUpdateProf
           <NavButton icon="backpack" label="Loadout" onClick={() => { setActiveModal('GEAR'); }} hologram />
           <NavButton icon="storefront" label="Shop" onClick={() => openModal('SHOP')} />
           <NavButton icon="stars" label="Skills" onClick={() => openModal('SKILLS')} />
-          <NavButton icon="history_edu" label="Logs" onClick={() => openModal('HISTORY')} />
-          <NavButton icon="local_fire_department" label="Tribute" onClick={() => openModal('TRIBUTE')} />
+          <NavButton icon="badge" label="Pass" onClick={() => openModal('BATTLE_PASS')} />
+          <NavButton icon="volunteer_activism" label="Tribute" onClick={() => openModal('TRIBUTE')} />
        </nav>
 
        <AnimatePresence>
          {activeModal && (
             <ModalWrapper onClose={closeModal}>
-               {activeModal === 'GEAR' && <GearView profile={profile} onUpdateProfile={handleProfileUpdate} initialTab="BODY" />}
-               {activeModal === 'SHOP' && <ShopView profile={profile} onPurchase={handlePurchase} />}
+               {activeModal === 'GEAR' && <GearView profile={profile} onUpdateProfile={handleProfileUpdate} initialTab="BODY" onClose={closeModal} />}
+               {activeModal === 'SHOP' && <ShopView profile={profile} onPurchase={handlePurchase} onClose={closeModal} />}
                {activeModal === 'SKILLS' && <SkillsView />}
                {activeModal === 'TRIBUTE' && <TributeView />}
                {activeModal === 'STATS' && <StatsView profile={profile} onUpdateProfile={handleProfileUpdate} />}
@@ -1685,6 +1750,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({ onNavigate, profile, onUpdateProf
                {activeModal === 'PROGRESSION' && <ProgressionView profile={profile} />}
                {activeModal === 'GUILDS' && <GuildsView />}
                {activeModal === 'ROULETTE' && <RouletteView profile={profile} onUpdateProfile={handleProfileUpdate} />}
+               {activeModal === 'BATTLE_PASS' && <BattlePassView />}
                {activeModal === 'CAMPFIRE' && <CampfireView onComplete={handleCampfireComplete} />}
                {activeModal === 'HISTORY' && <HistoryView history={profile.history || []} />}
                {activeModal === 'DAILY_OPTIONS' && (
