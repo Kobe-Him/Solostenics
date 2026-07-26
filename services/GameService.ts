@@ -351,11 +351,22 @@ export const GameService = {
     return newProfile;
   },
 
-  performCampfire: async (profile: PlayerProfile): Promise<PlayerProfile> => {
+  performCampfire: async (profile: PlayerProfile, bonusExp: number = 0): Promise<PlayerProfile> => {
     const newProfile = { ...profile };
     newProfile.dailyQuestCompleted = true;
     newProfile.currentHp = newProfile.stats.vit * 10;
     newProfile.currentMana = newProfile.stats.int * 10;
+    
+    if (bonusExp > 0) {
+        newProfile.currentXp += bonusExp;
+        if (newProfile.currentXp >= newProfile.requiredXp) {
+            newProfile.level += 1;
+            newProfile.currentXp -= newProfile.requiredXp;
+            newProfile.requiredXp = Math.floor(newProfile.requiredXp * 1.5);
+            newProfile.unspentPoints = (newProfile.unspentPoints || 0) + 3;
+        }
+    }
+    
     await GameService.saveGame(newProfile);
     return newProfile;
   }

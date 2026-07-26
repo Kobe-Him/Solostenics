@@ -1317,7 +1317,7 @@ const DailyOptionsView = ({ onSync, onCampfire, onDungeon, onClose }: { onSync: 
         <h2 className="font-display font-bold text-3xl text-white text-center mb-4">DAILY PROTOCOL</h2>
         
         <button 
-            onClick={() => { playUiSound('CONFIRM'); onDungeon(); onClose(); }}
+            onClick={() => { playUiSound('CONFIRM'); onDungeon(); }}
             className="w-full p-6 border border-critical bg-critical/10 hover:bg-critical/20 transition-all group relative overflow-hidden"
         >
             <div className="relative z-10 flex flex-col items-center">
@@ -1350,41 +1350,93 @@ const PROMPTS = [
     "What is your main focus for today's rest and recovery?"
 ];
 
-const CampfireView = ({ onComplete }: { onComplete: () => void }) => {
+const CampfireView = ({ onComplete }: { onComplete: (bonusExp: number) => void }) => {
+    const [activeTab, setActiveTab] = useState<'MEDITATE' | 'JOURNAL'>('MEDITATE');
     const [entry, setEntry] = useState('');
     const [prompt] = useState(() => PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
+    
+    // Tracking completion
+    const [journalDone, setJournalDone] = useState(false);
+    const [meditationDone, setMeditationDone] = useState(false);
+
+    // Watch for journal typing
+    useEffect(() => {
+        if (entry.trim().length >= 10) setJournalDone(true);
+        else setJournalDone(false);
+    }, [entry]);
+
+    const isBothDone = journalDone && meditationDone;
+    const canComplete = journalDone || meditationDone;
 
     return (
         <div className="h-full flex flex-col p-4 text-center overflow-y-auto no-scrollbar relative bg-[#050505]">
             <h2 className="font-display font-bold text-2xl text-white mb-1 uppercase tracking-widest text-orange-500">Campfire Rest</h2>
             <p className="font-mono text-[10px] text-gray-500 mb-4 uppercase">Mindful Recovery Protocol</p>
             
-            {/* Embedded 3-min Meditation Video */}
-            <div className="w-full aspect-video bg-black border border-white/10 mb-6 rounded overflow-hidden shadow-[0_0_15px_rgba(249,115,22,0.1)]">
-                <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src="https://www.youtube.com/embed/inpok4MKVLM" 
-                    title="3 Minute Guided Meditation" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen>
-                </iframe>
+            {/* Tabs */}
+            <div className="flex bg-black border border-white/20 p-1 mb-4">
+                <button 
+                    onClick={() => setActiveTab('MEDITATE')} 
+                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'MEDITATE' ? 'bg-orange-500 text-black' : 'text-gray-500 hover:text-white'}`}
+                >
+                    Meditate {meditationDone && '✓'}
+                </button>
+                <button 
+                    onClick={() => setActiveTab('JOURNAL')} 
+                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'JOURNAL' ? 'bg-orange-500 text-black' : 'text-gray-500 hover:text-white'}`}
+                >
+                    Journal {journalDone && '✓'}
+                </button>
             </div>
 
-            {/* Journal Section */}
-            <div className="w-full flex-1 flex flex-col text-left mb-6">
-                <h3 className="font-mono text-xs text-orange-400 mb-2 uppercase tracking-widest"><span className="material-symbols-outlined text-[12px] mr-1 align-text-bottom">edit_document</span> Daily Reflection</h3>
-                <p className="font-bold text-sm text-white mb-3 bg-white/5 p-3 border-l-2 border-orange-500">{prompt}</p>
-                <textarea 
-                    className="w-full flex-1 min-h-[100px] bg-black border border-white/20 text-white p-3 font-mono text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none mb-4"
-                    placeholder="Type your reflection here to verify your rest..."
-                    value={entry}
-                    onChange={(e) => setEntry(e.target.value)}
-                />
-                
-                <CyberButton onClick={() => { playUiSound('CONFIRM'); onComplete(); }} disabled={entry.trim().length < 10} icon="check">
-                    {entry.trim().length < 10 ? "ENTRY TOO SHORT" : "VERIFY & REST"}
+            {/* View Content */}
+            <div className="flex-1 min-h-[250px]">
+                {activeTab === 'MEDITATE' && (
+                    <div className="w-full flex flex-col items-center">
+                        <div className="w-full aspect-video bg-black border border-white/10 mb-4 rounded overflow-hidden shadow-[0_0_15px_rgba(249,115,22,0.1)] relative">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                src="https://www.youtube.com/embed/inpok4MKVLM" 
+                                title="3 Minute Guided Meditation" 
+                                frameBorder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen>
+                            </iframe>
+                        </div>
+                        <p className="text-xs font-mono text-gray-400 mb-4">Take 3 minutes to breathe. Click the button below when finished to log your session.</p>
+                        <button 
+                            onClick={() => { playUiSound('TICK'); setMeditationDone(true); }}
+                            disabled={meditationDone}
+                            className={`w-full py-3 font-bold uppercase tracking-widest border transition-colors ${meditationDone ? 'bg-green-500/20 border-green-500 text-green-500' : 'bg-white/10 border-white/30 text-white hover:bg-white hover:text-black'}`}
+                        >
+                            {meditationDone ? 'Meditation Logged ✓' : 'Log Meditation Session'}
+                        </button>
+                    </div>
+                )}
+
+                {activeTab === 'JOURNAL' && (
+                    <div className="w-full flex flex-col text-left h-full">
+                        <h3 className="font-mono text-xs text-orange-400 mb-2 uppercase tracking-widest"><span className="material-symbols-outlined text-[12px] mr-1 align-text-bottom">edit_document</span> Daily Reflection</h3>
+                        <p className="font-bold text-sm text-white mb-3 bg-white/5 p-3 border-l-2 border-orange-500">{prompt}</p>
+                        <textarea 
+                            className="w-full flex-1 min-h-[120px] bg-black border border-white/20 text-white p-3 font-mono text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none mb-4"
+                            placeholder="Type your reflection here..."
+                            value={entry}
+                            onChange={(e) => setEntry(e.target.value)}
+                        />
+                        {journalDone && <p className="text-green-500 font-mono text-[10px] text-center mb-2 uppercase tracking-widest">Journal Logged ✓</p>}
+                    </div>
+                )}
+            </div>
+            
+            {/* Completion Block */}
+            <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="font-mono text-[9px] text-gray-500 mb-2 uppercase tracking-widest">
+                    {isBothDone ? 'MAXIMUM MINDFULNESS ACHIEVED (+50 EXP)' : 'COMPLETE BOTH FOR +50 BONUS EXP'}
+                </p>
+                <CyberButton onClick={() => { playUiSound('CONFIRM'); onComplete(isBothDone ? 50 : 0); }} disabled={!canComplete} icon="check">
+                    {!canComplete ? "COMPLETE AN ACTIVITY" : (isBothDone ? "VERIFY & REST (BONUS +50)" : "VERIFY & REST")}
                 </CyberButton>
             </div>
         </div>
@@ -1458,41 +1510,49 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                 {/* Center Pointer */}
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-6 h-6 bg-primary transform rotate-45 z-30 shadow-[0_0_15px_#00FFFF]"></div>
                 
-                {/* Spinning Container */}
+                {/* Spinning Container (SVG PIE CHART) */}
                 <motion.div 
                     className="w-full h-full rounded-full border-4 border-gray-800 relative bg-black shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden"
                     animate={spinning ? { rotate: 360 * 5 + Math.floor(Math.random() * 360) } : { rotate: 0 }}
                     transition={spinning ? { duration: 3, ease: "circOut" } : { duration: 0 }}
-                    style={{
-                        background: `conic-gradient(
-                            from 0deg,
-                            ${WHEEL_LOOT_TABLE.map((item, i) => {
-                                const color = getRarityColor(item.tier);
-                                const start = (i * 100) / WHEEL_LOOT_TABLE.length;
-                                const end = ((i + 1) * 100) / WHEEL_LOOT_TABLE.length;
-                                return `${color}33 ${start}%, ${color}33 ${end}%`;
-                            }).join(', ')}
-                        )`
-                    }}
                 >
-                    {/* Inner divider lines for pie slices */}
-                    {WHEEL_LOOT_TABLE.map((_, i) => {
-                        const angle = (i * 360) / WHEEL_LOOT_TABLE.length;
-                        return (
-                            <div 
-                                key={`line-${i}`}
-                                className="absolute top-0 left-1/2 w-0.5 h-1/2 bg-gray-800/50 origin-bottom"
-                                style={{ transform: `translateX(-50%) rotate(${angle}deg)` }}
-                            ></div>
-                        );
-                    })}
+                    <svg viewBox="0 0 200 200" className="w-full h-full absolute inset-0 transform -rotate-90">
+                        {WHEEL_LOOT_TABLE.map((item, i) => {
+                            const total = WHEEL_LOOT_TABLE.length;
+                            const angle = 360 / total;
+                            const startAngle = i * angle;
+                            const endAngle = (i + 1) * angle;
 
-                    {/* Loot Items positioned in a circle */}
+                            const startRad = startAngle * (Math.PI / 180);
+                            const endRad = endAngle * (Math.PI / 180);
+
+                            const x1 = 100 + 100 * Math.cos(startRad);
+                            const y1 = 100 + 100 * Math.sin(startRad);
+                            const x2 = 100 + 100 * Math.cos(endRad);
+                            const y2 = 100 + 100 * Math.sin(endRad);
+
+                            const pathData = `M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`;
+                            const color = getRarityColor(item.tier);
+                            
+                            return (
+                                <path 
+                                    key={`slice-${i}`}
+                                    d={pathData}
+                                    fill={color}
+                                    fillOpacity="0.25"
+                                    stroke="#1f2937"
+                                    strokeWidth="1.5"
+                                />
+                            );
+                        })}
+                    </svg>
+
+                    {/* Loot Items positioned in a circle over the SVG */}
                     {WHEEL_LOOT_TABLE.map((item, i) => {
                         const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
                         const angle = (i * sliceAngle) + (sliceAngle / 2); // Center of the slice
                         const rad = angle * (Math.PI / 180);
-                        const radius = 85; // Distance from center
+                        const radius = 70; // Adjusted for SVG coordinates visually
                         const x = radius * Math.sin(rad);
                         const y = -radius * Math.cos(rad);
                         const color = getRarityColor(item.tier);
@@ -1507,7 +1567,7 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                                     textShadow: `0 0 10px ${color}88`
                                 }}
                             >
-                                <span className="material-symbols-outlined text-2xl mb-1">{item.icon}</span>
+                                <span className="material-symbols-outlined text-[28px] mb-1">{item.icon}</span>
                             </div>
                         );
                     })}
@@ -1619,10 +1679,9 @@ const GameLobby: React.FC<GameLobbyProps> = ({ onNavigate, profile, onUpdateProf
       setRefreshKey(prev => prev + 1);
   };
 
-  const handleCampfireComplete = async () => {
-      const updated = await GameService.performCampfire(profile);
-      if (onUpdateProfile) onUpdateProfile(updated);
-      setRefreshKey(prev => prev + 1);
+  const handleCampfireComplete = async (bonusExp: number = 0) => {
+      const updated = await GameService.performCampfire(profile, bonusExp);
+      onUpdateProfile(updated);
       closeModal();
   };
 
