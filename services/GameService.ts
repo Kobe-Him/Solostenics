@@ -20,8 +20,6 @@ export const WHEEL_LOOT_TABLE: WheelReward[] = [
   { id: 'pot_s', label: 'Minor Potion', type: 'ITEM', tier: 'COMMON', value: 25, icon: 'local_drink', description: 'Restores 25 HP' },
   { id: 'mana_s', label: 'Mana Vial', type: 'ITEM', tier: 'COMMON', value: 20, icon: 'water_drop', description: 'Restores 20 Mana' },
   { id: 'gear_c', label: 'Gear Crate', type: 'ITEM', tier: 'UNCOMMON', value: 1, icon: 'backpack', description: 'Common Equipment' },
-  { id: 'shadow_t', label: 'Shadow Treat', type: 'BUFF', tier: 'UNCOMMON', value: 1, icon: 'pets', description: '+10% XP Next Run' },
-  { id: 'pot_l', label: 'Full Potion', type: 'ITEM', tier: 'RARE', value: 100, icon: 'vaccines', description: 'Full HP Restore' },
   { id: 'iron_l', label: 'Large Iron', type: 'CURRENCY', tier: 'RARE', value: 200, icon: 'monetization_on', description: '+200 Iron' },
   { id: 'stat_p', label: 'Stat Fragment', type: 'STAT', tier: 'MYTHIC', value: 1, icon: 'stars', description: '+1 Permanent Stat Point' },
   { id: 'gear_r', label: 'Rare Crate', type: 'ITEM', tier: 'MYTHIC', value: 1, icon: 'diamond', description: 'Rare Equipment' },

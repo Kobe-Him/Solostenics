@@ -543,6 +543,16 @@ const GearView = ({ profile, onUpdateProfile, onClose, initialTab = 'BODY' }: { 
                         </motion.div>
                     )}
                 </AnimatePresence>
+                
+                {!spinning && !result && (
+                    <button
+                        onClick={handleSpin}
+                        disabled={!!timeLeft}
+                        className="w-full mt-4 py-4 bg-[#39ff14] border-4 border-black rounded-xl text-black font-display font-black text-4xl shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[4px_8px_0_#000] active:translate-y-1 active:shadow-[0px_0px_0_#000] transition-all disabled:opacity-50 disabled:grayscale disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_#000]"
+                    >
+                        {timeLeft ? `SPIN : ${timeLeft}` : 'SPIN !'}
+                    </button>
+                )}
            </div>
        </div>
    );
@@ -1443,10 +1453,22 @@ const CampfireView = ({ onComplete }: { onComplete: (bonusExp: number) => void }
     );
 };
 
+const WHEEL_COLORS = [
+    '#9c27b0', // purple
+    '#e91e63', // pink
+    '#f44336', // red
+    '#ff9800', // orange
+    '#ffeb3b', // yellow
+    '#4caf50', // green
+    '#03a9f4', // light blue
+    '#2196f3', // blue
+];
+
 const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, onUpdateProfile: (p: PlayerProfile) => void }) => {
     const [spinning, setSpinning] = useState(false);
     const [result, setResult] = useState<WheelReward | null>(null);
     const [timeLeft, setTimeLeft] = useState<string | null>(null);
+    const [targetRotation, setTargetRotation] = useState(0);
 
     // 12-hour cooldown check
     useEffect(() => {
@@ -1463,57 +1485,61 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                 const remaining = cooldownMs - elapsed;
                 const hours = Math.floor(remaining / (1000 * 60 * 60));
                 const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-                setTimeLeft(`${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+                setTimeLeft(`${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`);
             } else {
                 setTimeLeft(null);
             }
         };
 
         checkCooldown();
-        const interval = setInterval(checkCooldown, 1000);
+        const interval = setInterval(checkCooldown, 60000);
         return () => clearInterval(interval);
     }, [profile.lastSpinTime]);
 
     const handleSpin = async () => {
         if (spinning || timeLeft) return;
         setResult(null);
+        
+        // 1. Get backend result first
+        const { newProfile, reward } = await GameService.spinWheel(profile);
+        
+        // 2. Calculate exact mathematical rotation to land on the reward
+        const index = WHEEL_LOOT_TABLE.findIndex(r => r.id === reward.id);
+        const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
+        const offset = (index * sliceAngle) + (sliceAngle / 2);
+        
+        // If winning slice is at 90 deg, we rotate 360 - 90 = 270 deg to bring it to top (0 deg).
+        // Add 5 full spins (1800 deg) for the animation effect.
+        const alignment = 360 - offset;
+        const finalRotation = targetRotation + (360 * 5) + (alignment - (targetRotation % 360));
+        
+        setTargetRotation(finalRotation);
         setSpinning(true);
         playUiSound('CLICK');
         
-        // Wait animation
+        // 3. Wait animation
         await new Promise(r => setTimeout(r, 3000));
         
-        const { newProfile, reward } = await GameService.spinWheel(profile);
-        onUpdateProfile(newProfile);
         setResult(reward);
+        onUpdateProfile(newProfile);
         setSpinning(false);
         playUiSound('CHIME');
     };
 
-    const getRarityColor = (tier: string) => {
-        switch(tier) {
-            case 'UNCOMMON': return '#22c55e';
-            case 'RARE': return '#3b82f6';
-            case 'MYTHIC': return '#ef4444';
-            default: return '#ffffff';
-        }
-    };
-
     return (
         <div className="h-full flex flex-col items-center p-6 text-center bg-[#050505] overflow-y-auto no-scrollbar">
-            <h2 className="font-display font-bold text-2xl text-white mb-2 tracking-widest uppercase">Spirit Wheel</h2>
-            <p className="font-mono text-[10px] text-gray-500 mb-8 uppercase">1 Free Spin Every 12 Hours</p>
             
             {/* The Visual Wheel */}
-            <div className="relative w-64 h-64 mb-10 shrink-0">
+            <div className="relative w-72 h-72 mb-10 shrink-0 mt-8">
                 {/* Center Pointer */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-6 h-6 bg-primary transform rotate-45 z-30 shadow-[0_0_15px_#00FFFF]"></div>
+                <svg className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 z-40 drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" viewBox="0 0 100 100">
+                    <polygon points="10,10 90,10 50,80" fill="white" stroke="black" strokeWidth="8" strokeLinejoin="round" />
+                </svg>
                 
                 {/* Spinning Container (SVG PIE CHART) */}
                 <motion.div 
-                    className="w-full h-full rounded-full border-4 border-gray-800 relative bg-black shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden"
-                    animate={spinning ? { rotate: 360 * 5 + Math.floor(Math.random() * 360) } : { rotate: 0 }}
+                    className="w-full h-full rounded-full border-[10px] border-white ring-4 ring-black relative bg-black shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden"
+                    animate={{ rotate: targetRotation }}
                     transition={spinning ? { duration: 3, ease: "circOut" } : { duration: 0 }}
                 >
                     <svg viewBox="0 0 200 200" className="w-full h-full absolute inset-0 transform -rotate-90">
@@ -1532,16 +1558,15 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                             const y2 = 100 + 100 * Math.sin(endRad);
 
                             const pathData = `M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`;
-                            const color = getRarityColor(item.tier);
+                            const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
                             
                             return (
                                 <path 
                                     key={`slice-${i}`}
                                     d={pathData}
                                     fill={color}
-                                    fillOpacity="0.25"
-                                    stroke="#1f2937"
-                                    strokeWidth="1.5"
+                                    stroke="black"
+                                    strokeWidth="2"
                                 />
                             );
                         })}
@@ -1551,36 +1576,31 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                     {WHEEL_LOOT_TABLE.map((item, i) => {
                         const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
                         const angle = (i * sliceAngle) + (sliceAngle / 2); // Center of the slice
-                        const rad = angle * (Math.PI / 180);
-                        const radius = 70; // Adjusted for SVG coordinates visually
-                        const x = radius * Math.sin(rad);
-                        const y = -radius * Math.cos(rad);
-                        const color = getRarityColor(item.tier);
                         
                         return (
                             <div 
                                 key={i} 
-                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center"
+                                className="absolute top-1/2 left-1/2 flex flex-col items-center justify-center font-display font-black text-white whitespace-nowrap"
                                 style={{ 
-                                    transform: `translate(${x}px, ${y}px) rotate(${angle}deg)`,
-                                    color: color,
-                                    textShadow: `0 0 10px ${color}88`
+                                    transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`,
+                                    textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 4px rgba(0,0,0,0.5)'
                                 }}
                             >
-                                <span className="material-symbols-outlined text-[28px] mb-1">{item.icon}</span>
+                                <span className="text-[14px] leading-tight mb-1">{item.label}</span>
+                                <span className="material-symbols-outlined text-4xl" style={{ color: item.type === 'CURRENCY' ? 'gold' : 'white' }}>{item.icon}</span>
                             </div>
                         );
                     })}
                 </motion.div>
                 
                 {/* Center Core */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-900 rounded-full border border-gray-700 flex items-center justify-center z-20">
-                     <span className="material-symbols-outlined text-gray-600 text-3xl">cyclone</span>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full border-[6px] border-black flex items-center justify-center z-20 shadow-xl text-black font-display font-black text-2xl">
+                     ?
                 </div>
             </div>
 
             {/* Controls & Results */}
-            <div className="min-h-[120px] w-full flex flex-col items-center justify-start">
+            <div className="min-h-[140px] w-full flex flex-col items-center justify-start mt-6">
                 <AnimatePresence mode="wait">
                     {result && !spinning && (
                         <motion.div 
@@ -1591,32 +1611,14 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                             className="text-center w-full max-w-[280px]"
                         >
                             <p className="text-[10px] text-gray-400 font-mono uppercase mb-2 tracking-widest">REWARD OBTAINED</p>
-                            <div className="bg-gradient-to-b from-white/10 to-transparent p-4 border-t-2 mb-4 w-full" style={{ borderColor: getRarityColor(result.tier) }}>
-                                <span className="material-symbols-outlined text-4xl mb-2 drop-shadow-md" style={{ color: getRarityColor(result.tier) }}>{result.icon}</span>
-                                <h3 className="font-display font-bold text-white text-xl uppercase tracking-wider" style={{ color: getRarityColor(result.tier) }}>{result.label}</h3>
-                                <p className="text-[11px] text-gray-300 font-mono mt-2">{result.description}</p>
+                            <div className="bg-white/10 p-4 border-2 border-white mb-4 w-full">
+                                <span className="material-symbols-outlined text-4xl mb-2 text-white">{result.icon}</span>
+                                <h3 className="font-display font-bold text-white text-xl uppercase tracking-wider">{result.label}</h3>
                             </div>
                             <button onClick={() => setResult(null)} className="text-[10px] text-gray-500 font-mono underline hover:text-white uppercase">Close Result</button>
                         </motion.div>
                     )}
-                    
-                    {!result && (
-                        <motion.div key="controls" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center">
-                            {timeLeft ? (
-                                <div className="border border-gray-800 bg-black p-4 min-w-[200px]">
-                                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-2">NEXT SPIN AVAILABLE IN</p>
-                                    <p className="font-display text-3xl font-black text-primary italic">{timeLeft}</p>
-                                </div>
-                            ) : (
-                                <CyberButton onClick={handleSpin} disabled={spinning} icon="refresh">
-                                    {spinning ? "SPINNING..." : "SPIN THE WHEEL"}
-                                </CyberButton>
-                            )}
-                        </motion.div>
-                    )}
                 </AnimatePresence>
-            </div>
-            
             {/* Loot Table Legend */}
             <div className="w-full mt-8 border-t border-white/10 pt-6">
                 <h3 className="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-4">Possible Rewards</h3>
