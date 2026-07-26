@@ -1619,6 +1619,39 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                         </motion.div>
                     )}
                 </AnimatePresence>
+                
+                {!spinning && !result && (
+                    <div className="w-full flex flex-col gap-2 mt-4">
+                        <button
+                            onClick={handleSpin}
+                            disabled={!!timeLeft}
+                            className="w-full py-4 bg-[#39ff14] border-4 border-black rounded-xl text-black font-display font-black text-4xl shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[4px_8px_0_#000] active:translate-y-1 active:shadow-[0px_0px_0_#000] transition-all disabled:opacity-50 disabled:grayscale disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_#000]"
+                        >
+                            {timeLeft ? `SPIN : ${timeLeft}` : 'SPIN !'}
+                        </button>
+                        <button
+                            onClick={async () => {
+                                // Dev Bypass Spin
+                                setResult(null);
+                                const { newProfile, reward } = await GameService.spinWheel(profile);
+                                const index = WHEEL_LOOT_TABLE.findIndex(r => r.id === reward.id);
+                                const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
+                                const offset = (index * sliceAngle) + (sliceAngle / 2);
+                                const alignment = 360 - offset;
+                                const finalRotation = targetRotation + (360 * 5) + (alignment - (targetRotation % 360));
+                                setTargetRotation(finalRotation);
+                                setSpinning(true);
+                                await new Promise(r => setTimeout(r, 3000));
+                                setResult(reward);
+                                onUpdateProfile(newProfile);
+                                setSpinning(false);
+                            }}
+                            className="text-[10px] text-gray-500 font-mono underline hover:text-white uppercase"
+                        >
+                            [Dev Pass] Spin Instantly
+                        </button>
+                    </div>
+                )}
             {/* Loot Table Legend */}
             <div className="w-full mt-8 border-t border-white/10 pt-6">
                 <h3 className="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-4">Possible Rewards</h3>
