@@ -1,0 +1,8 @@
+{
+  "name": "Remix Project Solostenics",
+  "description": "The Savage System: A gamified calisthenics RPG onboarding experience that bullies you into shape.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": []
+}
