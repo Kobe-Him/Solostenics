@@ -1,10 +1,12 @@
 # Welcome to the Solostenics MVP! 👋
 
+**🔥 Live Interactive Demo:** [https://solostenics.vercel.app](https://solostenics.vercel.app)
+
 Hello! Thank you so much for taking the time to review the Solostenics MVP. 
 
-This is a working prototype of our gamified physical therapy app. We know evaluating software can be a bit tricky if you aren't a developer by trade, so we've made this as easy and friendly as possible. 
+This is a working prototype of our gamified physical therapy app. If you just want to test it immediately, click the **Live Interactive Demo** link above! 
 
-Here is exactly how you can get this running on your own computer in about 2 minutes:
+If you want to evaluate the source code and run it locally, we've made this as easy and friendly as possible. Here is exactly how you can get this running on your own computer in about 2 minutes:
 
 ## 🛠️ Step 1: Getting Ready
 To run this, your computer just needs a standard program called **Node.js**. 
