@@ -1,30 +1,39 @@
-# Solostenics MVP - Technical Testing Guide
+# Welcome to the Solostenics MVP! 👋
 
-Welcome! This is the working MVP for the Solostenics app. We have made it extremely simple to test. 
+Hello! Thank you so much for taking the time to review the Solostenics MVP. 
 
-## 🚀 Quick Start (No Setup Required)
-You do not need to configure any environment variables to test the core AI tracking and gamification UI.
+This is a working prototype of our gamified physical therapy app. We know evaluating software can be a bit tricky if you aren't a developer by trade, so we've made this as easy and friendly as possible. 
 
-**1. Install Dependencies**
-```bash
-npm install
-```
+Here is exactly how you can get this running on your own computer in about 2 minutes:
 
-**2. Start the App**
-```bash
-npm run dev
-```
+## 🛠️ Step 1: Getting Ready
+To run this, your computer just needs a standard program called **Node.js**. 
+*If you don't already have it, you can download it safely and quickly here:* [Download Node.js](https://nodejs.org/) *(Just click the recommended version and install it like any normal app).*
 
-**3. Open in Browser**
-Click the local link in your terminal (usually `http://localhost:5173`).
+## 💻 Step 2: Starting the App
+1. Open a **Terminal** on your computer. 
+   * **On Mac:** Press `Cmd + Space`, type "Terminal", and hit Enter.
+   * **On Windows:** Press the Windows key, type "cmd", and hit Enter.
+2. In your terminal, navigate to the folder where you downloaded this project.
+3. Type the following command and press Enter (this downloads the required files):
+   ```bash
+   npm install
+   ```
+4. Once that finishes, type this command and press Enter (this turns the app on!):
+   ```bash
+   npm run dev
+   ```
+5. Finally, open your web browser (like Google Chrome or Safari) and go to this exact address:
+   **http://localhost:5173**
 
 ---
 
-## 🎮 How to Test the Product
-1. **Explore the UI:** Click through the Game Lobby. You will see a Destiny-style Loadout, an interactive Item Shop, and a horizontally scrolling Skill Tree.
-2. **Start a Workout:** Click the **ENTER DUNGEON** button.
-3. **Enable Camera:** Click "Allow" when your browser asks for camera permissions.
-4. **Step Back:** Step away from your computer so the webcam can see your entire body. The Google MediaPipe AI will instantly draw a tracking skeleton over your joints.
-5. **Do a Push-Up:** Perform a push-up. The AI will evaluate your form, count the rep, and the on-screen monster will take damage.
+## 🎮 Step 3: Playing the Game!
+Now that you are in the app, here is how you can test the AI tracking:
+1. **Look Around:** Click through the Game Lobby. Check out the Destiny-style Loadout, the Shop, and the Skill Tree.
+2. **Start a Mission:** Click the big **ENTER DUNGEON** button.
+3. **Turn on the Camera:** Your browser will ask for permission to use your webcam. Please click "Allow".
+4. **Get in Position:** Stand up and step back from your computer so the webcam can see your whole body. Our AI (Google MediaPipe) will instantly draw a tracking skeleton over your joints.
+5. **Do a Push-Up!** Drop down and do a push-up. The AI will evaluate your form in real-time, count your rep, and deal damage to the monster on your screen!
 
-*Thank you for reviewing the Solostenics MVP!*
+Thank you again for your time and for reviewing Solostenics!
