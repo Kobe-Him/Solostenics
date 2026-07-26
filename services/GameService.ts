@@ -320,7 +320,7 @@ export const GameService = {
 
   spinWheel: async (profile: PlayerProfile): Promise<{ newProfile: PlayerProfile, reward: WheelReward }> => {
     const reward = WHEEL_LOOT_TABLE[Math.floor(Math.random() * WHEEL_LOOT_TABLE.length)];
-    const newProfile = { ...profile };
+    const newProfile = { ...profile, lastSpinTime: Date.now() };
 
     if (reward.type === 'CURRENCY') {
       if (reward.id.includes('iron')) newProfile.iron += reward.value;

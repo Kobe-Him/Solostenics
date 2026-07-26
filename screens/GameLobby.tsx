@@ -1384,14 +1384,43 @@ const CampfireView = ({ onComplete }: { onComplete: () => void }) => {
 const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, onUpdateProfile: (p: PlayerProfile) => void }) => {
     const [spinning, setSpinning] = useState(false);
     const [result, setResult] = useState<WheelReward | null>(null);
+    const [timeLeft, setTimeLeft] = useState<string | null>(null);
+
+    // 12-hour cooldown check
+    useEffect(() => {
+        const checkCooldown = () => {
+            if (!profile.lastSpinTime) {
+                setTimeLeft(null);
+                return;
+            }
+            const cooldownMs = 12 * 60 * 60 * 1000;
+            const now = Date.now();
+            const elapsed = now - profile.lastSpinTime;
+            
+            if (elapsed < cooldownMs) {
+                const remaining = cooldownMs - elapsed;
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((remaining % (1000 * 60)) / 1000);
+                setTimeLeft(`${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+            } else {
+                setTimeLeft(null);
+            }
+        };
+
+        checkCooldown();
+        const interval = setInterval(checkCooldown, 1000);
+        return () => clearInterval(interval);
+    }, [profile.lastSpinTime]);
 
     const handleSpin = async () => {
-        if (spinning || result) return;
+        if (spinning || timeLeft) return;
+        setResult(null);
         setSpinning(true);
         playUiSound('CLICK');
         
         // Wait animation
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 3000));
         
         const { newProfile, reward } = await GameService.spinWheel(profile);
         onUpdateProfile(newProfile);
@@ -1400,29 +1429,117 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
         playUiSound('CHIME');
     };
 
+    const getRarityColor = (tier: string) => {
+        switch(tier) {
+            case 'UNCOMMON': return '#22c55e';
+            case 'RARE': return '#3b82f6';
+            case 'MYTHIC': return '#ef4444';
+            default: return '#ffffff';
+        }
+    };
+
     return (
-        <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-            <h2 className="font-display font-bold text-2xl text-white mb-6">DAILY FORTUNE</h2>
+        <div className="h-full flex flex-col items-center p-6 text-center bg-[#050505] overflow-y-auto no-scrollbar">
+            <h2 className="font-display font-bold text-2xl text-white mb-2 tracking-widest uppercase">Spirit Wheel</h2>
+            <p className="font-mono text-[10px] text-gray-500 mb-8 uppercase">1 Free Spin Every 12 Hours</p>
             
-            <div className={`relative w-48 h-48 border-4 border-primary rounded-full flex items-center justify-center mb-8 ${spinning ? 'animate-spin' : ''}`}>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-critical transform rotate-45 z-20"></div>
-                <span className="material-symbols-outlined text-6xl text-primary">cyclone</span>
+            {/* The Visual Wheel */}
+            <div className="relative w-64 h-64 mb-10 shrink-0">
+                {/* Center Pointer */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-6 h-6 bg-primary transform rotate-45 z-30 shadow-[0_0_15px_#00FFFF]"></div>
+                
+                {/* Spinning Container */}
+                <motion.div 
+                    className="w-full h-full rounded-full border-2 border-gray-800 relative bg-black shadow-[inset_0_0_50px_rgba(0,0,0,1)]"
+                    animate={spinning ? { rotate: 360 * 5 + Math.floor(Math.random() * 360) } : { rotate: 0 }}
+                    transition={spinning ? { duration: 3, ease: "circOut" } : { duration: 0 }}
+                >
+                    {/* Ring decoration */}
+                    <div className="absolute inset-2 rounded-full border border-gray-800/50"></div>
+                    <div className="absolute inset-8 rounded-full border border-gray-900"></div>
+
+                    {/* Loot Items positioned in a circle */}
+                    {WHEEL_LOOT_TABLE.map((item, i) => {
+                        const angle = (i * 360) / WHEEL_LOOT_TABLE.length;
+                        const rad = angle * (Math.PI / 180);
+                        const radius = 100; // Distance from center
+                        const x = radius * Math.sin(rad);
+                        const y = -radius * Math.cos(rad);
+                        const color = getRarityColor(item.tier);
+                        
+                        return (
+                            <div 
+                                key={i} 
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-sm bg-black border"
+                                style={{ 
+                                    transform: `translate(${x}px, ${y}px) rotate(${angle}deg)`,
+                                    borderColor: color,
+                                    color: color,
+                                    boxShadow: `0 0 10px ${color}33`
+                                }}
+                            >
+                                <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                            </div>
+                        );
+                    })}
+                </motion.div>
+                
+                {/* Center Core */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-900 rounded-full border border-gray-700 flex items-center justify-center z-20">
+                     <span className="material-symbols-outlined text-gray-600 text-3xl">cyclone</span>
+                </div>
             </div>
 
-            {result ? (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-                    <p className="text-xs text-gray-400 font-mono uppercase mb-2">YOU RECEIVED</p>
-                    <div className="bg-white/10 p-4 border border-primary/50 mb-4 inline-block min-w-[200px]">
-                        <span className="material-symbols-outlined text-3xl text-primary mb-2">{result.icon}</span>
-                        <h3 className="font-bold text-white text-lg">{result.label}</h3>
-                        <p className="text-[10px] text-gray-400 font-mono">{result.description}</p>
-                    </div>
-                </motion.div>
-            ) : (
-                <CyberButton onClick={handleSpin} disabled={spinning} icon="refresh">
-                    {spinning ? "SPINNING..." : "SPIN WHEEL"}
-                </CyberButton>
-            )}
+            {/* Controls & Results */}
+            <div className="min-h-[120px] w-full flex flex-col items-center justify-start">
+                <AnimatePresence mode="wait">
+                    {result && !spinning && (
+                        <motion.div 
+                            key="result"
+                            initial={{ opacity: 0, scale: 0.8, y: 20 }} 
+                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className="text-center w-full max-w-[280px]"
+                        >
+                            <p className="text-[10px] text-gray-400 font-mono uppercase mb-2 tracking-widest">REWARD OBTAINED</p>
+                            <div className="bg-gradient-to-b from-white/10 to-transparent p-4 border-t-2 mb-4 w-full" style={{ borderColor: getRarityColor(result.tier) }}>
+                                <span className="material-symbols-outlined text-4xl mb-2 drop-shadow-md" style={{ color: getRarityColor(result.tier) }}>{result.icon}</span>
+                                <h3 className="font-display font-bold text-white text-xl uppercase tracking-wider" style={{ color: getRarityColor(result.tier) }}>{result.label}</h3>
+                                <p className="text-[11px] text-gray-300 font-mono mt-2">{result.description}</p>
+                            </div>
+                            <button onClick={() => setResult(null)} className="text-[10px] text-gray-500 font-mono underline hover:text-white uppercase">Close Result</button>
+                        </motion.div>
+                    )}
+                    
+                    {!result && (
+                        <motion.div key="controls" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center">
+                            {timeLeft ? (
+                                <div className="border border-gray-800 bg-black p-4 min-w-[200px]">
+                                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-2">NEXT SPIN AVAILABLE IN</p>
+                                    <p className="font-display text-3xl font-black text-primary italic">{timeLeft}</p>
+                                </div>
+                            ) : (
+                                <CyberButton onClick={handleSpin} disabled={spinning} icon="refresh">
+                                    {spinning ? "SPINNING..." : "SPIN THE WHEEL"}
+                                </CyberButton>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+            
+            {/* Loot Table Legend */}
+            <div className="w-full mt-8 border-t border-white/10 pt-6">
+                <h3 className="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-4">Possible Rewards</h3>
+                <div className="grid grid-cols-2 gap-2 text-left">
+                    {WHEEL_LOOT_TABLE.map((item, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[10px]" style={{ color: getRarityColor(item.tier) }}>{item.icon}</span>
+                            <span className="font-mono text-[9px] uppercase" style={{ color: getRarityColor(item.tier) }}>{item.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

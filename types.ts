@@ -96,6 +96,7 @@ export interface PlayerProfile extends UserData {
   vengeanceGauge: number; // 0, 1, or 2
   history: DungeonRecord[];
   unspentPoints: number;
+  lastSpinTime?: number; // Timestamp of last wheel spin
 }
 
 export const INITIAL_USER_DATA: UserData = {
