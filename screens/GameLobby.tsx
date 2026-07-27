@@ -1496,6 +1496,15 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
         return () => clearInterval(interval);
     }, [profile.lastSpinTime]);
 
+    const getRarityColor = (tier: string) => {
+        switch(tier) {
+            case 'UNCOMMON': return '#22c55e';
+            case 'RARE': return '#3b82f6';
+            case 'MYTHIC': return '#ef4444';
+            default: return '#ffffff';
+        }
+    };
+
     const handleSpin = async () => {
         if (spinning || timeLeft) return;
         setResult(null);
@@ -1652,6 +1661,8 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                         </button>
                     </div>
                 )}
+            </div>
+
             {/* Loot Table Legend */}
             <div className="w-full mt-8 border-t border-white/10 pt-6">
                 <h3 className="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-4">Possible Rewards</h3>
