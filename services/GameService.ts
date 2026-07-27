@@ -12,17 +12,18 @@ export interface WheelReward {
   value: number;
   icon: string;
   description: string;
+  weight: number;
 }
 
 export const WHEEL_LOOT_TABLE: WheelReward[] = [
-  { id: 'iron_s', label: 'Iron Cache', type: 'CURRENCY', tier: 'COMMON', value: 75, icon: 'toll', description: '+75 Iron' },
-  { id: 'xp_s', label: 'XP Shard', type: 'CURRENCY', tier: 'COMMON', value: 50, icon: 'auto_awesome', description: '+50 XP' },
-  { id: 'pot_s', label: 'Minor Potion', type: 'ITEM', tier: 'COMMON', value: 25, icon: 'local_drink', description: 'Restores 25 HP' },
-  { id: 'mana_s', label: 'Mana Vial', type: 'ITEM', tier: 'COMMON', value: 20, icon: 'water_drop', description: 'Restores 20 Mana' },
-  { id: 'gear_c', label: 'Gear Crate', type: 'ITEM', tier: 'UNCOMMON', value: 1, icon: 'backpack', description: 'Common Equipment' },
-  { id: 'iron_l', label: 'Large Iron', type: 'CURRENCY', tier: 'RARE', value: 200, icon: 'monetization_on', description: '+200 Iron' },
-  { id: 'stat_p', label: 'Stat Fragment', type: 'STAT', tier: 'MYTHIC', value: 1, icon: 'stars', description: '+1 Permanent Stat Point' },
-  { id: 'gear_r', label: 'Rare Crate', type: 'ITEM', tier: 'MYTHIC', value: 1, icon: 'diamond', description: 'Rare Equipment' },
+  { id: 'iron_s', label: 'Iron Cache', type: 'CURRENCY', tier: 'COMMON', value: 75, icon: 'toll', description: '+75 Iron', weight: 300 },
+  { id: 'xp_s', label: 'XP Shard', type: 'CURRENCY', tier: 'COMMON', value: 50, icon: 'auto_awesome', description: '+50 XP', weight: 250 },
+  { id: 'pot_s', label: 'Minor Potion', type: 'ITEM', tier: 'COMMON', value: 25, icon: 'local_drink', description: 'Restores 25 HP', weight: 150 },
+  { id: 'mana_s', label: 'Mana Vial', type: 'ITEM', tier: 'COMMON', value: 20, icon: 'water_drop', description: 'Restores 20 Mana', weight: 150 },
+  { id: 'gear_c', label: 'Gear Crate', type: 'ITEM', tier: 'UNCOMMON', value: 1, icon: 'backpack', description: 'Common Equipment', weight: 80 },
+  { id: 'iron_l', label: 'Large Iron', type: 'CURRENCY', tier: 'RARE', value: 200, icon: 'monetization_on', description: '+200 Iron', weight: 50 },
+  { id: 'stat_p', label: 'Stat Fragment', type: 'STAT', tier: 'MYTHIC', value: 1, icon: 'stars', description: '+1 Permanent Stat', weight: 5 },
+  { id: 'gear_r', label: 'Rare Crate', type: 'ITEM', tier: 'MYTHIC', value: 1, icon: 'diamond', description: 'Rare Equipment', weight: 15 },
 ];
 
 export const GameService = {
@@ -317,7 +318,18 @@ export const GameService = {
   },
 
   spinWheel: async (profile: PlayerProfile): Promise<{ newProfile: PlayerProfile, reward: WheelReward }> => {
-    const reward = WHEEL_LOOT_TABLE[Math.floor(Math.random() * WHEEL_LOOT_TABLE.length)];
+    const totalWeight = WHEEL_LOOT_TABLE.reduce((sum, item) => sum + item.weight, 0);
+    let rand = Math.random() * totalWeight;
+    let reward = WHEEL_LOOT_TABLE[0];
+    
+    for (const item of WHEEL_LOOT_TABLE) {
+      if (rand < item.weight) {
+        reward = item;
+        break;
+      }
+      rand -= item.weight;
+    }
+
     const newProfile = { ...profile, lastSpinTime: Date.now() };
 
     if (reward.type === 'CURRENCY') {

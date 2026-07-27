@@ -1453,17 +1453,6 @@ const CampfireView = ({ onComplete }: { onComplete: (bonusExp: number) => void }
     );
 };
 
-const WHEEL_COLORS = [
-    '#9c27b0', // purple
-    '#e91e63', // pink
-    '#f44336', // red
-    '#ff9800', // orange
-    '#ffeb3b', // yellow
-    '#4caf50', // green
-    '#03a9f4', // light blue
-    '#2196f3', // blue
-];
-
 const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, onUpdateProfile: (p: PlayerProfile) => void }) => {
     const [spinning, setSpinning] = useState(false);
     const [result, setResult] = useState<WheelReward | null>(null);
@@ -1541,13 +1530,13 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
             {/* The Visual Wheel */}
             <div className="relative w-72 h-72 mb-10 shrink-0 mt-8">
                 {/* Center Pointer */}
-                <svg className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 z-40 drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" viewBox="0 0 100 100">
-                    <polygon points="10,10 90,10 50,80" fill="white" stroke="black" strokeWidth="8" strokeLinejoin="round" />
+                <svg className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 z-40 drop-shadow-[0_0_15px_#00FFFF]" viewBox="0 0 100 100">
+                    <polygon points="10,10 90,10 50,90" fill="#00FFFF" stroke="#000" strokeWidth="6" strokeLinejoin="round" />
                 </svg>
                 
                 {/* Spinning Container (SVG PIE CHART) */}
                 <motion.div 
-                    className="w-full h-full rounded-full border-[10px] border-white ring-4 ring-black relative bg-black shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden"
+                    className="w-full h-full rounded-full border-4 border-[#00FFFF] relative bg-black shadow-[0_0_40px_rgba(0,255,255,0.2)] overflow-hidden"
                     animate={{ rotate: targetRotation }}
                     transition={spinning ? { duration: 3, ease: "circOut" } : { duration: 0 }}
                 >
@@ -1567,14 +1556,15 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                             const y2 = 100 + 100 * Math.sin(endRad);
 
                             const pathData = `M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`;
-                            const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+                            const color = getRarityColor(item.tier);
                             
                             return (
                                 <path 
                                     key={`slice-${i}`}
                                     d={pathData}
                                     fill={color}
-                                    stroke="black"
+                                    fillOpacity="0.15"
+                                    stroke={color}
                                     strokeWidth="2"
                                 />
                             );
@@ -1585,26 +1575,31 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                     {WHEEL_LOOT_TABLE.map((item, i) => {
                         const sliceAngle = 360 / WHEEL_LOOT_TABLE.length;
                         const angle = (i * sliceAngle) + (sliceAngle / 2); // Center of the slice
+                        const color = getRarityColor(item.tier);
                         
                         return (
                             <div 
                                 key={i} 
-                                className="absolute top-1/2 left-1/2 flex flex-col items-center justify-center font-display font-black text-white whitespace-nowrap"
+                                className="absolute top-1/2 left-1/2 flex flex-col items-center justify-center font-display font-black whitespace-nowrap"
                                 style={{ 
                                     transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`,
-                                    textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 4px rgba(0,0,0,0.5)'
+                                    color: color,
+                                    textShadow: `0 0 10px ${color}`
                                 }}
                             >
-                                <span className="text-[14px] leading-tight mb-1">{item.label}</span>
-                                <span className="material-symbols-outlined text-4xl" style={{ color: item.type === 'CURRENCY' ? 'gold' : 'white' }}>{item.icon}</span>
+                                <span className="text-[12px] leading-none mb-1 opacity-90">{item.label}</span>
+                                <span className="material-symbols-outlined text-3xl mb-1">{item.icon}</span>
+                                <span className="font-mono text-[9px] bg-black/60 px-1.5 py-0.5 rounded border border-white/10 text-white tracking-widest">
+                                    {(item.weight / 10).toFixed(1)}%
+                                </span>
                             </div>
                         );
                     })}
                 </motion.div>
                 
                 {/* Center Core */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full border-[6px] border-black flex items-center justify-center z-20 shadow-xl text-black font-display font-black text-2xl">
-                     ?
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-black rounded-full border-4 border-[#00FFFF] flex items-center justify-center z-20 shadow-[0_0_20px_#00FFFF] text-[#00FFFF]">
+                     <span className="material-symbols-outlined text-2xl">cyclone</span>
                 </div>
             </div>
 
@@ -1634,9 +1629,9 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                         <button
                             onClick={handleSpin}
                             disabled={!!timeLeft}
-                            className="w-full py-4 bg-[#39ff14] border-4 border-black rounded-xl text-black font-display font-black text-4xl shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[4px_8px_0_#000] active:translate-y-1 active:shadow-[0px_0px_0_#000] transition-all disabled:opacity-50 disabled:grayscale disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_#000]"
+                            className="w-full py-4 bg-blue-950 border border-[#00FFFF] rounded-sm text-[#00FFFF] font-display font-bold tracking-widest text-xl shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:bg-blue-900 transition-all disabled:opacity-50 disabled:grayscale disabled:hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] disabled:cursor-not-allowed"
                         >
-                            {timeLeft ? `SPIN : ${timeLeft}` : 'SPIN !'}
+                            {timeLeft ? `COOLDOWN: ${timeLeft}` : '[ INITIALIZE SPIN ]'}
                         </button>
                         <button
                             onClick={async () => {
@@ -1661,19 +1656,6 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                         </button>
                     </div>
                 )}
-            </div>
-
-            {/* Loot Table Legend */}
-            <div className="w-full mt-8 border-t border-white/10 pt-6">
-                <h3 className="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-4">Possible Rewards</h3>
-                <div className="grid grid-cols-2 gap-2 text-left">
-                    {WHEEL_LOOT_TABLE.map((item, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-[10px]" style={{ color: getRarityColor(item.tier) }}>{item.icon}</span>
-                            <span className="font-mono text-[9px] uppercase" style={{ color: getRarityColor(item.tier) }}>{item.label}</span>
-                        </div>
-                    ))}
-                </div>
             </div>
         </div>
     );
