@@ -1618,6 +1618,7 @@ const RouletteView = ({ profile, onUpdateProfile }: { profile: PlayerProfile, on
                             <div className="bg-white/10 p-4 border-2 border-white mb-4 w-full">
                                 <span className="material-symbols-outlined text-4xl mb-2 text-white">{result.icon}</span>
                                 <h3 className="font-display font-bold text-white text-xl uppercase tracking-wider">{result.label}</h3>
+                                <p className="text-[12px] text-primary font-mono mt-2">{result.description}</p>
                             </div>
                             <button onClick={() => setResult(null)} className="text-[10px] text-gray-500 font-mono underline hover:text-white uppercase">Close Result</button>
                         </motion.div>
